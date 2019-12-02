@@ -1,0 +1,199 @@
+﻿{
+  "EndPointSchemas": {
+    "GET_ServerTime": {
+      "method": "GET",
+      "requestString": "/v2/public/time",
+      "Parameters": null
+    },
+    "GET_Announcement": {
+      "method": "GET",
+      "requestString": "/v2/public/announcement",
+      "Parameters": {}
+    },
+    "GET_ApiKeyInfo": {
+      "method": "GET",
+      "requestString": "/open-api/api-key",
+      "Parameters": {}
+    },
+    "POST_PlaceActiveOrder": {
+      "method": "POST",
+      "requestString": "/open-api/order/create",
+      "Parameters": {
+        "side": {
+          "type": "String",
+          "isRequired": true
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "order_type": {
+          "type": "String",
+          "isRequired": true
+        },
+        "qty": {
+          "type": "int",
+          "isRequired": true
+        },
+        "price": {
+          "type": "double",
+          "isRequired": false
+        },
+        "time_in_force": {
+          "type": "String",
+          "isRequired": true
+        },
+        "take_profit": {
+          "type": "double",
+          "isRequired": false
+        },
+        "stop_loss": {
+          "type": "double",
+          "isRequired": false
+        },
+        "reduce_only": {
+          "type": "boolean",
+          "isRequired": false
+        },
+        "close_on_trigger": {
+          "type": "boolean",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_GetActiveOrder": {
+      "method": "GET",
+      "requestString": "/open-api/order/list",
+      "Parameters": {
+        "order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order": {
+          "type": "String",
+          "isRequired": false
+        },
+        "page": {
+          "type": "int",
+          "isRequired": false
+        },
+        "limit": {
+          "type": "int",
+          "isRequired": false
+        },
+        "order_status": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "POST_CancelActiveOrder": {
+      "method": "POST",
+      "requestString": "/open-api/order/cancel",
+      "Parameters": {
+        "order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "POST_ReplaceOrder": {
+      "method": "POST",
+      "requestString": "/open-api/order/replace",
+      "Parameters": {
+        "order_id": {
+          "type": "String",
+          "isRequired": true
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "p_r_qty": {
+          "type": "int",
+          "isRequired": false
+        },
+        "p_r_price": {
+          "type": "double",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_UserLeverage": {
+      "method": "GET",
+      "requestString": "/user/leverage",
+      "Parameters": {}
+    },
+    "POST_ChangeUserLeverage": {
+      "method": "POST",
+      "requestString": "/user/leverage/save",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "leverage": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "GET_MyPosition": {
+      "method": "GET",
+      "requestString": "/position/list",
+      "Parameters": {}
+    },
+    "GET_LatestInformationForSymbol": {
+      "method": "GET",
+      "requestString": "/v2/public/tickers",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_QueryHistoricalKline": {
+      "method": "GET",
+      "requestString": "v2/public/kline/list",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "interval": {
+          "type": "String",
+          "isRequired": true
+        },
+        "from": {
+          "type": "int",
+          "isRequired": true
+        },
+        "limit": {
+          "type": "int",
+          "isRequired": false
+        }
+      }
+    }
+  }
+}
