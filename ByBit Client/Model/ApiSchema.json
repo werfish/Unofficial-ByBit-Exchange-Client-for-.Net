@@ -3,7 +3,7 @@
     "GET_ServerTime": {
       "method": "GET",
       "requestString": "/v2/public/time",
-      "Parameters": null
+      "Parameters": {}
     },
     "GET_Announcement": {
       "method": "GET",
@@ -117,6 +117,16 @@
         }
       }
     },
+    "POST_CancelAllActiveOrders": {
+      "method": "POST",
+      "requestString": "/v2/private/order/cancelAll",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
     "POST_ReplaceOrder": {
       "method": "POST",
       "requestString": "/open-api/order/replace",
@@ -134,6 +144,136 @@
           "isRequired": false
         },
         "p_r_price": {
+          "type": "double",
+          "isRequired": false
+        }
+      }
+    },
+    "POST_PlaceConditionalOrder": {
+      "method": "POST",
+      "requestString": "/open-api/stop-order/create",
+      "Parameters": {
+        "side": {
+          "type": "String",
+          "isRequired": true
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "order_type": {
+          "type": "String",
+          "isRequired": true
+        },
+        "qty": {
+          "type": "int",
+          "isRequired": true
+        },
+        "price": {
+          "type": "double",
+          "isRequired": false
+        },
+        "base_price": {
+          "type": "double",
+          "isRequired": true
+        },
+        "stop_px": {
+          "type": "double",
+          "isRequired": true
+        },
+        "time_in_force": {
+          "type": "String",
+          "isRequired": true
+        },
+        "trigger_by": {
+          "type": "String",
+          "isRequired": false
+        },
+        "close_on_trigger": {
+          "type": "boolean",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_GetConditionalOrder": {
+      "method": "GET",
+      "requestString": "/open-api/stop-order/list",
+      "Parameters": {
+        "stop_order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order": {
+          "type": "String",
+          "isRequired": false
+        },
+        "page": {
+          "type": "int",
+          "isRequired": false
+        },
+        "limit": {
+          "type": "int",
+          "isRequired": false
+        }
+      }
+    },
+    "POST_CancelConditionalOrder": {
+      "method": "POST",
+      "requestString": "/open-api/stop-order/cancel",
+      "Parameters": {
+        "stop_order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "POST_CancelAllConditionalOrders": {
+      "method": "POST",
+      "requestString": "/v2/private/stop-order/cancelAll",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "POST_ReplaceConditionalOrder": {
+      "method": "POST",
+      "requestString": "/open-api/stop-order/replace",
+      "Parameters": {
+        "order_id": {
+          "type": "String",
+          "isRequired": true
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "p_r_qty": {
+          "type": "int",
+          "isRequired": false
+        },
+        "p_r_price": {
+          "type": "double",
+          "isRequired": false
+        },
+        "p_r_trigger_price": {
           "type": "double",
           "isRequired": false
         }
@@ -163,12 +303,166 @@
       "requestString": "/position/list",
       "Parameters": {}
     },
+    "POST_ChangePositionMargin": {
+      "method": "POST",
+      "requestString": "/position/change-position-margin",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "margin": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "POST_SetTrading-Stop": {
+      "method": "POST",
+      "requestString": "/open-api/position/trading-stop",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "take_profit": {
+          "type": "String",
+          "isRequired": false
+        },
+        "stop_loss": {
+          "type": "String",
+          "isRequired": false
+        },
+        "trailing_stop": {
+          "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_GetWalletFundRecords": {
+      "method": "GET",
+      "requestString": "/open-api/wallet/fund/records",
+      "Parameters": {
+        "start_date": {
+          "type": "String",
+          "isRequired": false
+        },
+        "end_date": {
+          "type": "String",
+          "isRequired": false
+        },
+        "currency": {
+          "type": "String",
+          "isRequired": false
+        },
+        "coin": {
+          "type": "String",
+          "isRequired": false
+        },
+        "wallet_fund_type": {
+          "type": "String",
+          "isRequired": false
+        },
+        "page": {
+          "type": "int",
+          "isRequired": false
+        },
+        "limit": {
+          "type": "int",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_GetTheLastFundingRate": {
+      "method": "GET",
+      "requestString": "/open-api/funding/prev-funding-rate",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "GET_GetMyLastFundingFee": {
+      "method": "GET",
+      "requestString": "/open-api/funding/prev-funding-rate",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "GET_GetPredictedFundingRateAndFundingFee": {
+      "method": "GET",
+      "requestString": "/open-api/funding/predicted-funding",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "GET_GetUsersTradeRecords": {
+      "method": "GET",
+      "requestString": "/v2/private/execution/list",
+      "Parameters": {
+        "order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": false
+        },
+        "start_time": {
+          "type": "int",
+          "isRequired": false
+        },
+        "page": {
+          "type": "int",
+          "isRequired": false
+        },
+        "limit": {
+          "type": "int",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_GetOrderbook": {
+      "method": "GET",
+      "requestString": "/v2/public/orderBook/L2",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
     "GET_LatestInformationForSymbol": {
       "method": "GET",
       "requestString": "/v2/public/tickers",
       "Parameters": {
         "symbol": {
           "type": "String",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_GetPublicTradingRecords": {
+      "method": "GET",
+      "requestString": "/v2/public/trading-records",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "from": {
+          "type": "int",
+          "isRequired": false
+        },
+        "limit": {
+          "type": "int",
           "isRequired": false
         }
       }
@@ -196,4 +490,4 @@
       }
     }
   }
-}
+  }
