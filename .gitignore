@@ -263,3 +263,4 @@ paket-files/
 __pycache__/
 *.pyc
 /ByBytApiSchemaExplorer/Properties/launchSettings.json
+/ByBitClientTest/Properties/launchSettings.json

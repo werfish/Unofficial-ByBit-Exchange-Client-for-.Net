@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using ByBitClientLib;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ByBitClientTest
 {
@@ -9,10 +12,16 @@ namespace ByBitClientTest
         static void Main(string[] args)
         {
             Boolean isRunning;
-            string API_SECRET = "osDcZ3Y4gSJHggWBWOVMqB61oqkSLthnUOf0";
-            string API_KEY = "HclvL8D7owWw5MePmz";
-            string API_URL = @"https://" + @"api-testnet.bybit.com";
             ByBitClient client;
+
+            string TemplateFilePath = args[0];
+
+            //Load JSON template file containing Secret key,API Key and API_URL
+            string JsonString = File.ReadAllText(TemplateFilePath, Encoding.UTF8);
+            JObject Api_JSON = JObject.Parse(JsonString);
+            string API_SECRET = (string)Api_JSON["API_SECRET"];
+            string API_KEY = (string)Api_JSON["API_KEY"];
+            string API_URL = (string)Api_JSON["API_URL"];
 
             isRunning = true;
             client = new ByBitClient(API_KEY,API_SECRET,API_URL);
