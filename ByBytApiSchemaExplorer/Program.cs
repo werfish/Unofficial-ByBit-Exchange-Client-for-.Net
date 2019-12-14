@@ -16,9 +16,10 @@ namespace ByBytApiSchemaExplorer
         static void Main(string[] args)
         {
             Boolean isRunning;
+            string TemplateFilePath = args[0];
 
             //Load JSON template file containing Secret key,API Key and API_URL
-            string JsonString = File.ReadAllText("ApiKeysTemplate.json",Encoding.UTF8);
+            string JsonString = File.ReadAllText(TemplateFilePath,Encoding.UTF8);
             JObject Api_JSON = JObject.Parse(JsonString);
             string API_SECRET = (string)Api_JSON["API_SECRET"];
             string API_KEY = (string)Api_JSON["API_KEY"];
