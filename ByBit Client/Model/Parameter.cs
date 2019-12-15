@@ -21,6 +21,7 @@ namespace ByBitClientLib.Model
             this.ParameterName = ParameterName;
             this.DataType = DataType;
             this.IsRequired = IsRequired;
+            this.Value = null;
         }
 
         internal Parameter DeepCopy()
@@ -28,7 +29,7 @@ namespace ByBitClientLib.Model
             Parameter copy = (Parameter)this.MemberwiseClone();
             if (Value != null)
             {
-                copy.Value = new Object();
+                copy.Value = Value;
             }
             else
             {

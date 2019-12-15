@@ -10,6 +10,7 @@ namespace ByBitClientLib
     public class ByBitRequest : IEnumerator, IEnumerable
     {
         private List<Parameter> RequestParameters;
+        private List<Parameter> CachedRequestParameters;
         private ByBitClient clientReference;
         private EndPoint endpointReference;
         private int position;
@@ -52,6 +53,18 @@ namespace ByBitClientLib
             }
 
             throw new ArgumentException(paramName, "paramName was not found in the parameters list.");
+        }
+
+        private List<Parameter> CreateParameterListDeepCopy(List<Parameter> ListToCopy)
+        {
+            List<Parameter> newParamsList = new List<Parameter>();
+
+            foreach (Parameter param in ListToCopy)
+            {
+                newParamsList.Add(param.DeepCopy());
+            }
+
+            return newParamsList;
         }
 
         internal void AddAuthenticationParameter(string paramName, string dataType, Object value)
@@ -108,7 +121,16 @@ namespace ByBitClientLib
 
         public String Execute()
         {
-            return clientReference.ExecuteRequest(this, endpointReference);
+            string result;
+            //Cache the parameters set by library user
+            CachedRequestParameters = CreateParameterListDeepCopy(RequestParameters);
+
+            //Make the Request
+            result = clientReference.ExecuteRequest(this, endpointReference);
+
+            //Load the cached parameters back
+            RequestParameters = CreateParameterListDeepCopy(CachedRequestParameters);
+            return result;
         }
 
         public bool MoveNext()
