@@ -1,6 +1,6 @@
 # Unofficial-ByBit-Exchange-Client-for-.Net
 
-One Paragraph of project description goes here
+This is a simple to use, fast and reliable client library for creating algorithmic trading algorights or tools for trading on the ByBit.com cryptocurrency perpetual futures exchange.
 
 ## Getting Started
 
