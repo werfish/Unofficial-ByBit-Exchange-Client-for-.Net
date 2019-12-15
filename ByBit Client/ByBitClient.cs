@@ -139,21 +139,32 @@ namespace ByBitClientLib
 
             //Create the hex SIGN
             string hexSign = CryptoGraFX.CreateSignature(API_SECRET, paramsString.ToString());
+            string result = "";
 
             if (endpoint.RequestMethod.Equals("GET"))
             {
-                return ExecuteGET(paramsString, hexSign, endpoint.RequestString);
+                result = ExecuteGET(paramsString, hexSign, endpoint.RequestString);
             }
             else if (endpoint.RequestMethod.Equals("POST"))
             {
-                //TESTING
-                Console.WriteLine(paramsString.ToString());
-
-                return ExecutePOST(newRequest, hexSign, endpoint.RequestString);
+                result = ExecutePOST(newRequest, hexSign, endpoint.RequestString);
 
             }
 
-            return "";
+            return ValidateRequest(result);
+        }
+
+        internal string ValidateRequest(string result)
+        {
+            JObject resultJson = JObject.Parse(result);
+            string returnCode = (string)resultJson["ret_msg"];
+
+            if (!returnCode.ToLower().Equals("ok"))
+            {
+                throw new Exception(result);
+            }
+
+            return result;
         }
 
         //PUBLIC INTERFACE
