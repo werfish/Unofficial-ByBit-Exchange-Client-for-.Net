@@ -20,4 +20,4 @@ Up to date .net platform (Core and Standard)
 
 ### Installing
 
-Donwload,clone of fork the project to yuor environment and load it into Visual Studio.
+Donwload,clone or fork the project to yuor environment and load it into Visual Studio.
