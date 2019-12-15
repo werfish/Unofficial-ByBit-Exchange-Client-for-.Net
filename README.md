@@ -7,3 +7,13 @@ This is a simple to use, fast and reliable client library for creating algorithm
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
 If you want to start using the library check out the Documentation (To Be Done).
+
+### Prerequisites
+
+What things you need to install to be able to run this project
+
+```
+Any edition of Visual Studio
+Ability to download packages from nuget
+Up to date .net platform (Core and Standard)
+```
