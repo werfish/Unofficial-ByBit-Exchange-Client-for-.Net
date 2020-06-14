@@ -17,7 +17,7 @@
     },
     "POST_PlaceActiveOrder": {
       "method": "POST",
-      "requestString": "/v2/private/order/create",
+      "requestString": "/open-api/order/create",
       "Parameters": {
         "side": {
           "type": "String",
@@ -62,10 +62,6 @@
         "order_link_id": {
           "type": "String",
           "isRequired": false
-        },
-        "trailing_stop": {
-          "type": "int",
-          "isRequired": false
         }
       }
     },
@@ -107,11 +103,11 @@
       "method": "POST",
       "requestString": "/v2/private/order/cancel",
       "Parameters": {
-        "order_id": {
-          "type": "String",
-          "isRequired": false
-        },
         "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "order_id": {
           "type": "String",
           "isRequired": false
         },
@@ -131,7 +127,7 @@
         }
       }
     },
-    "POST_ReplaceOrder": {
+    "POST_ReplaceActiveOrder": {
       "method": "POST",
       "requestString": "/open-api/order/replace",
       "Parameters": {
@@ -150,6 +146,24 @@
         "p_r_price": {
           "type": "double",
           "isRequired": false
+        }
+      }
+    },
+    "GET_QueryActiveOrder": {
+      "method": "GET",
+      "requestString": "/v2/private/order",
+      "Parameters": {
+        "order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "symbol": {
+          "type": "String",
+          "isRequired": true
         }
       }
     },
@@ -219,6 +233,10 @@
           "type": "String",
           "isRequired": false
         },
+        "stop_order_status": {
+          "type": "String",
+          "isRequired": false
+        },
         "order": {
           "type": "String",
           "isRequired": false
@@ -237,6 +255,10 @@
       "method": "POST",
       "requestString": "/open-api/stop-order/cancel",
       "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
         "stop_order_id": {
           "type": "String",
           "isRequired": false
@@ -261,9 +283,13 @@
       "method": "POST",
       "requestString": "/open-api/stop-order/replace",
       "Parameters": {
-        "order_id": {
+        "stop_order_id": {
           "type": "String",
           "isRequired": true
+        },
+        "order_id": {
+          "type": "String",
+          "isRequired": false
         },
         "symbol": {
           "type": "String",
@@ -279,6 +305,24 @@
         },
         "p_r_trigger_price": {
           "type": "double",
+          "isRequired": false
+        }
+      }
+    },
+    "GET_QueryConditionalOrder": {
+      "method": "GET",
+      "requestString": "/v2/private/stop-order",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "stop_order_id": {
+          "type": "String",
+          "isRequired": false
+        },
+        "order_link_id": {
+          "type": "String",
           "isRequired": false
         }
       }
@@ -304,10 +348,15 @@
     },
     "GET_MyPosition": {
       "method": "GET",
-      "requestString": "/position/list",
-      "Parameters": {}
+      "requestString": "/v2/private/position/list",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
     },
-    "POST_ChangePositionMargin": {
+    "POST_ChangeMargin": {
       "method": "POST",
       "requestString": "/position/change-position-margin",
       "Parameters": {
@@ -330,20 +379,34 @@
           "isRequired": true
         },
         "take_profit": {
-          "type": "String",
+          "type": "double",
           "isRequired": false
         },
         "stop_loss": {
-          "type": "String",
+          "type": "double",
           "isRequired": false
         },
         "trailing_stop": {
-          "type": "String",
+          "type": "double",
+          "isRequired": false
+        },
+        "new_trailing_active": {
+          "type": "double",
           "isRequired": false
         }
       }
     },
-    "GET_GetWalletFundRecords": {
+    "GET_GetWalletBalance": {
+      "method": "GET",
+      "requestString": "/v2/private/wallet/balance",
+      "Parameters": {
+        "coin": {
+          "type": "String",
+          "isRequired": true
+        }
+      }
+    },
+    "GET_WalletFundRecords": {
       "method": "GET",
       "requestString": "/open-api/wallet/fund/records",
       "Parameters": {
@@ -377,6 +440,36 @@
         }
       }
     },
+    "GET_WithdrawRecords": {
+      "method": "GET",
+      "requestString": "/open-api/wallet/withdraw/list",
+      "Parameters": {
+        "start_date": {
+          "type": "String",
+          "isRequired": false
+        },
+        "end_date": {
+          "type": "String",
+          "isRequired": false
+        },
+        "coin": {
+          "type": "String",
+          "isRequired": false
+        },
+        "status": {
+          "type": "String",
+          "isRequired": false
+        },
+        "page": {
+          "type": "int",
+          "isRequired": false
+        },
+        "limit": {
+          "type": "int",
+          "isRequired": false
+        }
+      }
+    },
     "GET_GetTheLastFundingRate": {
       "method": "GET",
       "requestString": "/open-api/funding/prev-funding-rate",
@@ -387,9 +480,9 @@
         }
       }
     },
-    "GET_GetMyLastFundingFee": {
+    "GET_MyLastFundingFee": {
       "method": "GET",
-      "requestString": "/open-api/funding/prev-funding-rate",
+      "requestString": "/open-api/funding/prev-funding",
       "Parameters": {
         "symbol": {
           "type": "String",
@@ -397,7 +490,7 @@
         }
       }
     },
-    "GET_GetPredictedFundingRateAndFundingFee": {
+    "GET_PredictedFundingRateAndMyFundingFee": {
       "method": "GET",
       "requestString": "/open-api/funding/predicted-funding",
       "Parameters": {
@@ -407,7 +500,7 @@
         }
       }
     },
-    "GET_GetUsersTradeRecords": {
+    "GET_UserTradeRecords": {
       "method": "GET",
       "requestString": "/v2/private/execution/list",
       "Parameters": {
@@ -417,7 +510,7 @@
         },
         "symbol": {
           "type": "String",
-          "isRequired": false
+          "isRequired": true
         },
         "start_time": {
           "type": "int",
@@ -433,7 +526,26 @@
         }
       }
     },
-    "GET_GetOrderbook": {
+    "GET_GetRiskLimit": {
+      "method": "GET",
+      "requestString": "/open-api/wallet/risk-limit/list",
+      "Parameters": {}
+    },
+    "POST_SetRiskLimit": {
+      "method": "POST",
+      "requestString": "/open-api/wallet/risk-limit",
+      "Parameters": {
+        "symbol": {
+          "type": "String",
+          "isRequired": true
+        },
+        "risk_id": {
+          "type": "int",
+          "isRequired": true
+        }
+      }
+    },
+    "GET_Orderbook": {
       "method": "GET",
       "requestString": "/v2/public/orderBook/L2",
       "Parameters": {
@@ -453,7 +565,7 @@
         }
       }
     },
-    "GET_GetPublicTradingRecords": {
+    "GET_PublicTradingRecords": {
       "method": "GET",
       "requestString": "/v2/public/trading-records",
       "Parameters": {
@@ -471,7 +583,7 @@
         }
       }
     },
-    "GET_QueryHistoricalKline": {
+    "GET_QueryKline": {
       "method": "GET",
       "requestString": "v2/public/kline/list",
       "Parameters": {
@@ -492,6 +604,11 @@
           "isRequired": false
         }
       }
+    },
+    "GET_QuerySymbol": {
+      "method": "GET",
+      "requestString": "/v2/public/symbols",
+      "Parameters": {}
     }
   }
   }

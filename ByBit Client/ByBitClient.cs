@@ -63,7 +63,7 @@ namespace ByBitClientLib
             requestString = requestString + "?" + paramsString.ToString();
 
             //TESTING
-            Console.WriteLine(paramsString.ToString());
+            //Console.WriteLine(paramsString.ToString());
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);
@@ -92,12 +92,12 @@ namespace ByBitClientLib
             }
 
             //TESTING
-            Console.WriteLine(JSON);
+            //Console.WriteLine(JSON);
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);
 
-            RestRequest restRequest = new RestRequest("/open-api/order/create", Method.POST);
+            RestRequest restRequest = new RestRequest(requestString, Method.POST);
 
             //Adding Json body as parameter to the post request
             restRequest.AddParameter("application/json", JSON, ParameterType.RequestBody);
@@ -113,7 +113,13 @@ namespace ByBitClientLib
         {
             //Add authentication Headers ("api_key", "timestamp", "recv_window" )
             newRequest.AddAuthenticationParameter("api_key", "String", API_KEY);
-            newRequest.AddAuthenticationParameter("timestamp", "Long", 0);
+
+            bool timestampOverrite = false;
+            if (!newRequest.ParamExists("timestamp"))
+            {
+                newRequest.AddAuthenticationParameter("timestamp", "Long", 0);
+            }
+            else { timestampOverrite = true; }
             if (RECV_WINDOW != String.Empty)
             {
                 newRequest.AddAuthenticationParameter("recv_window", "String", RECV_WINDOW);
@@ -125,8 +131,11 @@ namespace ByBitClientLib
             //Clean all the Parameters not set by the user
             newRequest.Clear();
 
-            //Add Unix TimeStamp
-            newRequest["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            //Add Unix TimeStamp if it hasn't been added
+            if (!timestampOverrite)
+            {
+                newRequest["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            }
             //create the ParameterString
             StringBuilder paramsString = new StringBuilder();
 
@@ -287,8 +296,8 @@ namespace ByBitClientLib
             JSON.Add("sign",hexSign);
 
             //TESTING
-            Console.WriteLine(paramsString.ToString());
-            Console.WriteLine(JSON);
+            //Console.WriteLine(paramsString.ToString());
+            //Console.WriteLine(JSON);
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);
@@ -403,8 +412,8 @@ namespace ByBitClientLib
             JSON.Add("sign", hexSign);
 
             //TESTING
-            Console.WriteLine(paramsString.ToString());
-            Console.WriteLine(JSON);
+            //Console.WriteLine(paramsString.ToString());
+            //Console.WriteLine(JSON);
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);
@@ -487,7 +496,7 @@ namespace ByBitClientLib
             requestString = requestString + "?" + paramsString.ToString();
 
             //TESTING
-            Console.WriteLine(paramsString.ToString());
+            //Console.WriteLine(paramsString.ToString());
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);

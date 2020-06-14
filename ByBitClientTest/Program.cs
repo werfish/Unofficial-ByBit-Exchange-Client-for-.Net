@@ -37,6 +37,7 @@ namespace ByBitClientTest
                 Console.WriteLine("5 -- Change Leverage!");
                 Console.WriteLine("6 -- Get Current Price!");
                 Console.WriteLine("7 -- Get Current Candle!");
+                Console.WriteLine("8 -- Check Server Time!");
 
                 string Choice;
 
@@ -46,7 +47,8 @@ namespace ByBitClientTest
                 {
                     Console.Clear();
                     ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-                    request.AddRequired("Buy", "BTCUSD", "Market", 1, "");
+                    request.AddRequired("Sell", "BTCUSD", "Limit", 1, "GoodTillCancel");
+                    request["price"] = 10000.00;
                     string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
@@ -57,8 +59,8 @@ namespace ByBitClientTest
                 else if (Choice.Equals("2"))
                 {
                     Console.Clear();
-                    ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-                    request.AddRequired("Sell", "BTCUSD", "Market", 1, "");
+                    ByBitRequest request = client.CreateRequest("POST_CancelAllActiveOrders");
+                    request.AddRequired("BTCUSD");
                     string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
@@ -69,7 +71,7 @@ namespace ByBitClientTest
                 else if (Choice.Equals("3"))
                 {
                     Console.Clear();
-                    string order = client.MakeRequest("GET_MyPosition");
+                    string order = client.MakeRequest("GET_MyPosition","BTCUSD");
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
                     Console.WriteLine("Checked Balance!!");
@@ -110,8 +112,8 @@ namespace ByBitClientTest
                 {
                     Console.Clear();
                     int Timeframe = ((Int32)(DateTime.UtcNow.AddMinutes(-20).Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
-                    //string order = client.MakeRequest("GET_QueryHistoricalKline","BTCUSD","5",Timeframe,1);
-                    ByBitRequest request = client.CreateRequest("GET_QueryHistoricalKline");
+                    //string order = client.MakeRequest("GET_QueryKline","BTCUSD","5",Timeframe,1);
+                    ByBitRequest request = client.CreateRequest("GET_QueryKline");
                     request.AddRequired("BTCUSD","5",Timeframe);
                     request["limit"] = 1;
                     string order = request.Execute();
@@ -119,6 +121,18 @@ namespace ByBitClientTest
                     Console.WriteLine(order);
                     File.WriteAllText("C:\\temp\\lol.json", order,new System.Text.UTF8Encoding());
                     Console.WriteLine("Current Candle Fetched!!");
+                    Console.WriteLine("Go Back? Press Enter");
+                    Console.ReadLine();
+                }
+                else if (Choice.Equals("8"))
+                {
+                    Console.Clear();
+                    //string order = client.MakeRequest("GET_QueryKline","BTCUSD","5",Timeframe,1);
+                    ByBitRequest request = client.CreateRequest("GET_ServerTime");
+                    string order = request.Execute();
+                    Console.WriteLine("-------------------RESPONSE---------------------");
+                    Console.WriteLine(order);
+                    Console.WriteLine("Server time Checked!!");
                     Console.WriteLine("Go Back? Press Enter");
                     Console.ReadLine();
                 }

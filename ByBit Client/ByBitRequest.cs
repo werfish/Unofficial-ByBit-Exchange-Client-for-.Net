@@ -67,6 +67,22 @@ namespace ByBitClientLib
             return newParamsList;
         }
 
+        internal bool ParamExists(string paramName)
+        {
+            bool exists = false;
+            try
+            {
+                GetItemByName(paramName);
+                exists = true;
+                return exists;
+            }
+            catch (Exception e)
+            {
+                exists = false;
+                return exists;
+            }
+        }
+
         internal void AddAuthenticationParameter(string paramName, string dataType, Object value)
         {
             RequestParameters.Add(new Parameter(paramName,dataType,true));
@@ -94,6 +110,11 @@ namespace ByBitClientLib
             {
                 GetItemByName(paramName).Value = value;
             }
+        }
+
+        public void Timestamp(long unixTimestamp)
+        {
+            AddAuthenticationParameter("timestamp", "Long", unixTimestamp);
         }
 
         public void AddRequired(params object[] values)
