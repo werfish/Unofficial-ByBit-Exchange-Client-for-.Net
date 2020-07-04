@@ -50,6 +50,65 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
+        public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        {
+            ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), beforeTriggerPrice, triggerPrice, timeInForce.ToString());
+
+            if (triggerBy != TriggerPriceType.LastPrice)
+            {
+                request["trigger_by"] = triggerBy.ToString();
+            }
+
+            return new Order(ExecuteWithRetry(request));
+        }
+
+        public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Decimal entryPrice, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        {
+            ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice, triggerPrice, timeInForce.ToString());
+            request["price"] = entryPrice;
+
+            if (triggerBy != TriggerPriceType.LastPrice)
+            {
+                request["trigger_by"] = triggerBy.ToString();
+            }
+
+            return new Order(ExecuteWithRetry(request));
+        }
+
+        public String CancelConditionalOrder(String CryptoPair, String orderId)
+        {
+            ByBitRequest request = client.CreateRequest("POST_CancelConditionalOrder");
+            request.AddRequired(CryptoPair);
+            request["stop_order_id"] = orderId;
+
+            return ExecuteWithRetry(request);
+        }
+
+        public String UpdateConditionalOrder(String CryptoPair, String orderId,int newOrderQuantity, Decimal newOrderPrice, Decimal newTriggerPrice)
+        {
+            ByBitRequest request = client.CreateRequest("POST_ReplaceConditionalOrder");
+            request.AddRequired(orderId, CryptoPair);
+
+            if (newOrderQuantity != 0)
+            {
+                request["p_r_qty"] = newOrderQuantity;
+            }
+
+            if (newOrderPrice != 0)
+            {
+                request["p_r_price"] = newOrderPrice;
+            }
+
+            if (newTriggerPrice != 0)
+            {
+                request["p_r_trigger_price"] = newTriggerPrice;
+            }
+            
+            return ExecuteWithRetry(request);
+        }
+
         public String SetStopLoss(String CryptoPair, Decimal stopPrice)
         {
             ByBitRequest request = client.CreateRequest("POST_SetTrading-Stop");
@@ -59,13 +118,13 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public Order SetTrailingStopLoss(String CryptoPair, Decimal usdAmount)
+        public String SetTrailingStopLoss(String CryptoPair, Decimal usdAmount)
         {
             ByBitRequest request = client.CreateRequest("POST_SetTrading-Stop");
             request.AddRequired(CryptoPair);
             request["trailing_stop"] = usdAmount;
 
-            return new Order(ExecuteWithRetry(request));
+            return ExecuteWithRetry(request);
         }
 
         public void LiquidatePosition(String CryptoPair)
@@ -81,15 +140,6 @@ namespace ByBitClientLib.ClientObjectModel
                 JObject json = JObject.Parse(Response);
                 PositionSize = (int)json["result"]["size"];
                 Side = (String)json["result"]["side"];
-
-                if (Side.Equals("Sell"))
-                {
-                    Side = "Buy";
-                }
-                else if (Side.Equals("Buy"))
-                {
-                    Side = "Sell";
-                }
 
                 if (PositionSize != 0)
                 {
