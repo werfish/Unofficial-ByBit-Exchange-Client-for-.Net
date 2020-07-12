@@ -47,7 +47,7 @@ namespace ByBitClientTest
                 {
                     Console.Clear();
                     ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-                    request.AddRequired("Sell", "BTCUSD", "Limit", 1, "GoodTillCancel");
+                    request.AddRequired("Sell", "ETHUSD", "Limit", 1, "GoodTillCancel");
                     request["price"] = 10000.00;
                     string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");

@@ -22,7 +22,7 @@ namespace ByBitClientLib.ClientObjectModel
             return new Order(ExecuteWithRetry(request));
         }
 
-        public Order LimitOrder(String CryptoPair,int Contracts, Decimal entryPrice, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        public Order LimitOrder(String CryptoPair,int Contracts, double entryPrice, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), timeInForce.ToString());
@@ -30,6 +30,14 @@ namespace ByBitClientLib.ClientObjectModel
             request["reduce_only"] = reduceOnly.ToString();
 
             return new Order(ExecuteWithRetry(request));
+        }
+
+        public String CancelActiveOrder(String cryptoPair, String orderId)
+        {
+            ByBitRequest request = client.CreateRequest("POST_CancelActiveOrder");
+            request.AddRequired(cryptoPair, orderId);
+
+            return ExecuteWithRetry(request);
         }
 
         public String UpdateLimitOrder(Order order, Decimal newEntryPrice, Decimal newQuantity)
@@ -127,7 +135,7 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public void LiquidatePosition(String CryptoPair)
+        public Boolean LiquidatePosition(String CryptoPair)
         {
             int PositionSize;
             String Side;
@@ -141,6 +149,15 @@ namespace ByBitClientLib.ClientObjectModel
                 PositionSize = (int)json["result"]["size"];
                 Side = (String)json["result"]["side"];
 
+                if (Side.Equals("Sell"))
+                {
+                    Side = "Buy";
+                }
+                else if (Side.Equals("Buy"))
+                {
+                    Side = "Sell";
+                }
+
                 if (PositionSize != 0)
                 {
                     ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
@@ -151,6 +168,16 @@ namespace ByBitClientLib.ClientObjectModel
                 Thread.Sleep(RetryIntervalLiquidation);
             }
             while (PositionSize != 0);
+
+            //If position is still not closed then send a false, else send true
+            if (PositionSize > 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         //private methods Orders Procecessig

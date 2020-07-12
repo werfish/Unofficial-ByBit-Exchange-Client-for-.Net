@@ -31,6 +31,13 @@ namespace ByBitClientLib
             Init(Api_Key, Api_Secret, api_url);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Api_Key"></param>
+        /// <param name="Api_Secret"></param>
+        /// <param name="api_url"></param>
+        /// <param name="recv_window"></param>
         public ByBitClient(string Api_Key, string Api_Secret, string api_url,string recv_window)
         {
             Init(Api_Key, Api_Secret, api_url);
