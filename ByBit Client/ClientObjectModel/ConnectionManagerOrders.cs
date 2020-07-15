@@ -26,7 +26,7 @@ namespace ByBitClientLib.ClientObjectModel
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), timeInForce.ToString());
-            request["price"] = entryPrice;
+            request["price"] = entryPrice.ToString();
             request["reduce_only"] = reduceOnly.ToString();
 
             return new Order(ExecuteWithRetry(request));
@@ -35,7 +35,16 @@ namespace ByBitClientLib.ClientObjectModel
         public String CancelActiveOrder(String cryptoPair, String orderId)
         {
             ByBitRequest request = client.CreateRequest("POST_CancelActiveOrder");
-            request.AddRequired(cryptoPair, orderId);
+            request.AddRequired(cryptoPair);
+            request["order_id"] = orderId;
+
+            return ExecuteWithRetry(request);
+        }
+
+        public String CancelAllActiveOrders(String cryptoPair)
+        {
+            ByBitRequest request = client.CreateRequest("POST_CancelAllActiveOrders");
+            request.AddRequired(cryptoPair);
 
             return ExecuteWithRetry(request);
         }

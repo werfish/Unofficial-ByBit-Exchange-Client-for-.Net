@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using ByBitClientLib;
+using ByBitClientLib.ClientObjectModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,10 +11,11 @@ namespace ByBitClientTest
 {
     class Program
     {
+        static ByBitClient client;
+
         static void Main(string[] args)
         {
-            Boolean isRunning;
-            ByBitClient client;
+            Boolean isRunning;            
 
             string TemplateFilePath = args[0];
 
@@ -38,6 +41,7 @@ namespace ByBitClientTest
                 Console.WriteLine("6 -- Get Current Price!");
                 Console.WriteLine("7 -- Get Current Candle!");
                 Console.WriteLine("8 -- Check Server Time!");
+                Console.WriteLine("9 -- RUN CONNECTION MANAGER TESTS");
 
                 string Choice;
 
@@ -46,10 +50,13 @@ namespace ByBitClientTest
                 if (Choice.Equals("1"))
                 {
                     Console.Clear();
-                    ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-                    request.AddRequired("Sell", "ETHUSD", "Limit", 1, "GoodTillCancel");
-                    request["price"] = 10000.00;
-                    string order = request.Execute();
+                    //String pair = new String("ETHUSD");
+                    //ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
+                    //request.AddRequired("Sell", pair, "Limit", 1, "GoodTillCancel");
+                    //request["price"] = 10000.00;
+                    ConnectionManager manager = new ConnectionManager(client);
+                    String order = manager.LimitOrder("ETHUSD",10,231.9).Response;
+                    //string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
                     Console.WriteLine("Made an Order!!");
@@ -136,6 +143,10 @@ namespace ByBitClientTest
                     Console.WriteLine("Go Back? Press Enter");
                     Console.ReadLine();
                 }
+                if (Choice.Equals("9"))
+                {
+                    ConnectionManagerTest(2000);
+                }
                 else
                 {
                     Console.Clear();
@@ -145,6 +156,66 @@ namespace ByBitClientTest
                 }
             }
 
+        }
+
+        public static void ConnectionManagerTest(int delay)
+        {
+            ConnectionManager manager = new ConnectionManager(client);
+            String crypto = "ETHUSD";
+            StringBuilder log = new StringBuilder();
+
+
+            //1st Test Market Order, with different Params
+            log.AppendLine(manager.MarketOrder(crypto, 1,false,ConnectionManager.TimeInForce.GoodTillCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.MarketOrder(crypto, 2, false, ConnectionManager.TimeInForce.FillOrKill).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.MarketOrder(crypto, -5, false, ConnectionManager.TimeInForce.PostOnly).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.MarketOrder(crypto, 1,true, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+
+            //2nd Test, Close Position
+            log.AppendLine(manager.LiquidatePosition(crypto).ToString());
+            Thread.Sleep(delay);
+            log.AppendLine(manager.MarketOrder(crypto, 1, false, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.LiquidatePosition(crypto).ToString());
+            Thread.Sleep(delay);
+
+            //Required for reduce only Limit Orders
+            log.AppendLine(manager.MarketOrder(crypto, 5, false, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+
+            //3rd Test, Limit Order, with Different Params
+            Order first = manager.LimitOrder(crypto, -10, 500, false, ConnectionManager.TimeInForce.GoodTillCancel);
+            log.AppendLine(first.Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.LimitOrder(crypto, -10, 550.55, false, ConnectionManager.TimeInForce.FillOrKill).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.LimitOrder(crypto, -2, 280.35, true, ConnectionManager.TimeInForce.GoodTillCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.LimitOrder(crypto, -10, 450.25, true, ConnectionManager.TimeInForce.PostOnly).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.LimitOrder(crypto, 10, 100.20, false, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+            Order last = manager.LimitOrder(crypto, 10, 100.85, false, ConnectionManager.TimeInForce.GoodTillCancel);
+            log.AppendLine(last.Response);
+            Thread.Sleep(delay);
+
+            //4th Test, Cancel the 1st Limit Order and the last Limit Orders
+            log.AppendLine(manager.CancelActiveOrder(first.CryptoPair,first.OrderId));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.CancelActiveOrder(last.CryptoPair, last.OrderId));
+            Thread.Sleep(delay);
+
+
+            //5th Test, Cancel All Active Orders and then close position
+            log.AppendLine(manager.CancelAllActiveOrders(first.CryptoPair));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.LiquidatePosition(crypto).ToString());
+
+            Console.WriteLine(log.ToString());
         }
     }
 }
