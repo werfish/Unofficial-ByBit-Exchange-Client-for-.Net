@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -214,6 +215,23 @@ namespace ByBitClientTest
             log.AppendLine(manager.CancelAllActiveOrders(first.CryptoPair));
             Thread.Sleep(delay);
             log.AppendLine(manager.LiquidatePosition(crypto).ToString());
+
+            //6th test, Create 65 Limit Orders and Check active Order Data
+            for (int i = 0; i < 65; i++)
+            {
+                manager.LimitOrder(crypto, 1, 70 + i, false, ConnectionManager.TimeInForce.GoodTillCancel);
+                Thread.Sleep(100);
+            }
+            List<Order> activeOrderList = manager.GetActiveOrders(crypto);
+            log.AppendLine("----------------GET ACTIVE ORDER TEST LIST----------------------------------------");
+
+            foreach (Order orderData in activeOrderList)
+            {
+                log.AppendLine(orderData.Response);
+            }
+
+            manager.CancelAllActiveOrders(crypto);
+            log.AppendLine("----------------END OF ACTIVE ORDER DATA TESTS-------------------------------");
 
             Console.WriteLine(log.ToString());
         }

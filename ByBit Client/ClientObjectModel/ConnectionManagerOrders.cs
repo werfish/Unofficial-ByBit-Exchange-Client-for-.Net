@@ -67,6 +67,53 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
+        //GET_GetActiveOrder
+        public List<Order> GetActiveOrders(String cryptoPair)
+        {
+            List<Order> orderList = new List<Order>();
+            Int32 currentPage = 0;
+            Int32 lastPage = 0;
+
+            String firstResponse = ActiveOrderQuery(cryptoPair, 1);
+            JObject firstResponseJson = JObject.Parse(firstResponse);
+            currentPage = (int)firstResponseJson["result"]["current_page"];
+            lastPage = (int)firstResponseJson["result"]["last_page"];
+
+            for (int i = 1; i <= lastPage;i++)
+            {
+                if (i == 1)
+                {
+                    foreach (JObject orderObject in firstResponseJson["result"]["data"].Children())
+                    {
+                        orderList.Add(new Order(orderObject));
+                    }
+                }
+                else
+                {
+                    String response = ActiveOrderQuery(cryptoPair, i);
+                    JObject responseJson = JObject.Parse(response);
+
+                    foreach (JObject orderObject in responseJson["result"]["data"].Children())
+                    {
+                        orderList.Add(new Order(orderObject));
+                    }
+                }
+            }
+
+            return orderList;
+
+        }
+
+        private String ActiveOrderQuery(String cryptoPair, Int32 page)
+        {
+            ByBitRequest request = client.CreateRequest("GET_GetActiveOrder");
+            request["symbol"] = cryptoPair;
+            request["page"] = page;
+            //request["limit"] = 50;    //Used the default whichy is 20
+
+            return ExecuteWithRetry(request);
+        }
+
         public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");

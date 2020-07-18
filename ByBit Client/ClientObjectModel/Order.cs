@@ -29,6 +29,12 @@ namespace ByBitClientLib.ClientObjectModel
             PopulateFields((JObject)json["result"]);
         }
 
+        public Order(JObject orderData)
+        {
+            this.Response = orderData.ToString();
+            PopulateFields(orderData);
+        }
+
         private void PopulateFields(JObject json)
         {
             this.OrderId = (String)json["order_id"];
