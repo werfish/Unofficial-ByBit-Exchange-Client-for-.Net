@@ -155,7 +155,7 @@
       "Parameters": {
         "order_id": {
           "type": "String",
-          "isRequired": false
+          "isRequired": true
         },
         "order_link_id": {
           "type": "String",

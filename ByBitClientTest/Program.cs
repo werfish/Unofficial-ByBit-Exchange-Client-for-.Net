@@ -204,19 +204,25 @@ namespace ByBitClientTest
             log.AppendLine(last.Response);
             Thread.Sleep(delay);
 
-            //4th Test, Cancel the 1st Limit Order and the last Limit Orders
+            //4th test, Querieng active order test
+            log.AppendLine("----------------QUERY ACTIVE ORDER TEST--------------------");
+            log.AppendLine(manager.QueryActiveOrder(first.CryptoPair, first.OrderId));
+            log.AppendLine("---END query Active Order TEST--------");
+
+
+            //5th Test, Cancel the 1st Limit Order and the last Limit Orders
             log.AppendLine(manager.CancelActiveOrder(first.CryptoPair,first.OrderId));
             Thread.Sleep(delay);
             log.AppendLine(manager.CancelActiveOrder(last.CryptoPair, last.OrderId));
             Thread.Sleep(delay);
 
 
-            //5th Test, Cancel All Active Orders and then close position
+            //6th Test, Cancel All Active Orders and then close position
             log.AppendLine(manager.CancelAllActiveOrders(first.CryptoPair));
             Thread.Sleep(delay);
             log.AppendLine(manager.LiquidatePosition(crypto).ToString());
 
-            //6th test, Create 65 Limit Orders and Check active Order Data
+            //7th test, Create 65 Limit Orders and Check active Order Data
             for (int i = 0; i < 65; i++)
             {
                 manager.LimitOrder(crypto, 1, 70 + i, false, ConnectionManager.TimeInForce.GoodTillCancel);

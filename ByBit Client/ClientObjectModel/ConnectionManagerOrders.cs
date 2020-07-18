@@ -67,6 +67,16 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
+        //GET_QueryActiveOrder
+        public String QueryActiveOrder(String cryptoPair, String orderId)
+        {
+            ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
+            request.AddRequired(orderId, cryptoPair);
+
+            return ExecuteWithRetry(request);
+        }
+
+
         //GET_GetActiveOrder
         public List<Order> GetActiveOrders(String cryptoPair)
         {
