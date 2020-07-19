@@ -84,7 +84,7 @@ namespace ByBitClientLib.ClientObjectModel
             Int32 currentPage = 0;
             Int32 lastPage = 0;
 
-            String firstResponse = ActiveOrderQuery(cryptoPair, 1);
+            String firstResponse = ActiveOrdersQuery(cryptoPair, 1);
             JObject firstResponseJson = JObject.Parse(firstResponse);
             currentPage = (int)firstResponseJson["result"]["current_page"];
             lastPage = (int)firstResponseJson["result"]["last_page"];
@@ -100,7 +100,7 @@ namespace ByBitClientLib.ClientObjectModel
                 }
                 else
                 {
-                    String response = ActiveOrderQuery(cryptoPair, i);
+                    String response = ActiveOrdersQuery(cryptoPair, i);
                     JObject responseJson = JObject.Parse(response);
 
                     foreach (JObject orderObject in responseJson["result"]["data"].Children())
@@ -114,7 +114,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         }
 
-        private String ActiveOrderQuery(String cryptoPair, Int32 page)
+        private String ActiveOrdersQuery(String cryptoPair, Int32 page)
         {
             ByBitRequest request = client.CreateRequest("GET_GetActiveOrder");
             request["symbol"] = cryptoPair;
@@ -180,6 +180,60 @@ namespace ByBitClientLib.ClientObjectModel
                 request["p_r_trigger_price"] = newTriggerPrice;
             }
             
+            return ExecuteWithRetry(request);
+        }
+
+        public List<Order> GetConditionalOrders(String cryptoPair)
+        {
+            List<Order> orderList = new List<Order>();
+            Int32 currentPage = 0;
+            Int32 lastPage = 0;
+
+            String firstResponse = ConditionalOrdersQuery(cryptoPair, 1);
+            JObject firstResponseJson = JObject.Parse(firstResponse);
+            currentPage = (int)firstResponseJson["result"]["current_page"];
+            lastPage = (int)firstResponseJson["result"]["last_page"];
+
+            for (int i = 1; i <= lastPage; i++)
+            {
+                if (i == 1)
+                {
+                    foreach (JObject orderObject in firstResponseJson["result"]["data"].Children())
+                    {
+                        orderList.Add(new Order(orderObject));
+                    }
+                }
+                else
+                {
+                    String response = ConditionalOrdersQuery(cryptoPair, i);
+                    JObject responseJson = JObject.Parse(response);
+
+                    foreach (JObject orderObject in responseJson["result"]["data"].Children())
+                    {
+                        orderList.Add(new Order(orderObject));
+                    }
+                }
+            }
+
+            return orderList;
+
+        }
+
+        private String ConditionalOrdersQuery(String cryptoPair, Int32 page)
+        {
+            ByBitRequest request = client.CreateRequest("GET_GetConditionalOrder");
+            request["symbol"] = cryptoPair;
+            request["page"] = page;
+            //request["limit"] = 50;    //Used the default whichy is 20
+
+            return ExecuteWithRetry(request);
+        }
+
+        public String QueryConditionalOrder(String cryptoPair, String orderId)
+        {
+            ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
+            request.AddRequired(orderId, cryptoPair);
+
             return ExecuteWithRetry(request);
         }
 
