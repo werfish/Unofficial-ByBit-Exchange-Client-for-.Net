@@ -18,7 +18,33 @@ namespace ByBitClientLib.ClientObjectModel
         public enum Symbol { BTCUSD, ETHUSD, EOSUSD, XRPUSD }
         public enum Currency { BTC, ETH , EOS , XRP , USDT }
         public enum TimeInForce {GoodTillCancel, ImmediateOrCancel, FillOrKill, PostOnly}
-        public enum OrderType { Market, Limit , ConditionalMarket, ConditionalLimit} //This is not ByBit Original Order type
+        public enum OrderType { Market, Limit , ConditionalMarket, ConditionalLimit} //This is not ByBit Original Order type ENUM
         public enum Side {Buy, Sell }
+
+        internal TriggerPriceType getTriggerPriceType(String triggerPriceType)
+        {
+            return (TriggerPriceType)Enum.Parse(typeof(TriggerPriceType), triggerPriceType);
+        }
+
+        internal OrderStatus getOrderStatus(String orderStatus)
+        {
+            return (OrderStatus)Enum.Parse(typeof(OrderStatus), orderStatus);
+        }
+
+        internal TimeInForce getTimeInForce(String timeInForce)
+        {
+            return (TimeInForce)Enum.Parse(typeof(TimeInForce), timeInForce);
+        }
+
+        internal StopOrderType getStopOrderType(String stopOrderType)
+        {
+            return (StopOrderType)Enum.Parse(typeof(StopOrderType), stopOrderType);
+        }
+
+        internal Side getSide(String side)
+        {
+            return (Side)Enum.Parse(typeof(Side), side);
+        }
+
     }
 }

@@ -7,20 +7,20 @@ namespace ByBitClientLib.ClientObjectModel
 {
     public class Order
     {
-        //To Acoomodate functionality from inside this class a ConnectionManager object is needed
+        //To Accomodate functionality from inside this class a ConnectionManager object is needed
         private ConnectionManager connManager;
 
         public String OrderId;
         //public String OrderLinkId;
         public String CryptoPair;
-        public String Side;
+        public ConnectionManager.Side Side;
         public ConnectionManager.OrderType OrderType;
         public ConnectionManager.StopOrderType ConditionalOrderType;
         public ConnectionManager.TriggerPriceType TriggerPriceType;
         public Decimal Price;
         int Quantity;
-        public String TimeInForce;
-        public String OrderStatus;
+        public ConnectionManager.TimeInForce TimeInForce;
+        public ConnectionManager.OrderStatus OrderStatus;
 
         public String Response;
 
@@ -65,11 +65,11 @@ namespace ByBitClientLib.ClientObjectModel
             this.OrderId = (String)json["order_id"];
             //this.OrderLinkId = (String)json["order_link_id"];
             this.CryptoPair = (String)json["symbol"];
-            this.Side = (String)json["side"];
+            this.Side = connManager.getSide((String)json["side"]);
             this.Price = (Decimal)json["price"];
             this.Quantity = (int)json["qty"];
-            this.TimeInForce = (String)json["time_in_force"];
-            this.OrderStatus = (String)json["order_status"];
+            this.TimeInForce = connManager.getTimeInForce((String)json["time_in_force"]);
+            this.OrderStatus = connManager.getOrderStatus((String)json["order_status"]);
             this.ConditionalOrderType = ConnectionManager.StopOrderType.NONE;
             this.TriggerPriceType = ConnectionManager.TriggerPriceType.NONE;
         }
@@ -81,11 +81,11 @@ namespace ByBitClientLib.ClientObjectModel
             this.OrderId = (String)json["stop_order_id"];
             //this.OrderLinkId = (String)json["order_link_id"];
             this.CryptoPair = (String)json["symbol"];
-            this.Side = (String)json["side"];
+            this.Side = connManager.getSide((String)json["side"]);
             this.Price = (Decimal)json["price"];
             this.Quantity = (int)json["qty"];
-            this.TimeInForce = (String)json["time_in_force"];
-            this.OrderStatus = (String)json["order_status"];
+            this.TimeInForce = connManager.getTimeInForce((String)json["time_in_force"]);
+            this.OrderStatus = connManager.getOrderStatus((String)json["order_status"]);
             this.ConditionalOrderType = ConnectionManager.StopOrderType.NONE;
             this.TriggerPriceType = ConnectionManager.TriggerPriceType.NONE;
         }
