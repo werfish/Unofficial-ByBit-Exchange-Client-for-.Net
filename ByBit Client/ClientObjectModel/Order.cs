@@ -7,6 +7,9 @@ namespace ByBitClientLib.ClientObjectModel
 {
     public class Order
     {
+        //To Acoomodate functionality from inside this class a ConnectionManager object is needed
+        private ConnectionManager connManager;
+
         public String OrderId;
         //public String OrderLinkId;
         public String CryptoPair;
@@ -24,8 +27,9 @@ namespace ByBitClientLib.ClientObjectModel
         //"created_at": "2019-11-30T11:03:43.452Z",
         //"updated_at": "2019-11-30T11:03:43.455Z"
 
-        public Order(String Response)
+        public Order(String Response, ConnectionManager connManager)
         {
+            this.connManager = connManager;
             JObject json = JObject.Parse(Response);
             this.Response = Response;
 
@@ -39,8 +43,9 @@ namespace ByBitClientLib.ClientObjectModel
             }
         }
 
-        public Order(JObject orderData)
+        public Order(JObject orderData, ConnectionManager connManager)
         {
+            this.connManager = connManager;
             this.Response = orderData.ToString();
 
             if (Response.Contains("stop_order_id"))

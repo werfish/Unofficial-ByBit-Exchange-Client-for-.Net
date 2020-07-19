@@ -19,7 +19,7 @@ namespace ByBitClientLib.ClientObjectModel
             request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), timeInForce.ToString());
             request["reduce_only"] = reduceOnly.ToString();
 
-            return new Order(ExecuteWithRetry(request));
+            return new Order(ExecuteWithRetry(request),this);
         }
 
         public Order LimitOrder(String CryptoPair,int Contracts, double entryPrice, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
@@ -29,7 +29,7 @@ namespace ByBitClientLib.ClientObjectModel
             request["price"] = entryPrice.ToString();
             request["reduce_only"] = reduceOnly.ToString();
 
-            return new Order(ExecuteWithRetry(request));
+            return new Order(ExecuteWithRetry(request),this);
         }
 
         public String CancelActiveOrder(String cryptoPair, String orderId)
@@ -95,7 +95,7 @@ namespace ByBitClientLib.ClientObjectModel
                 {
                     foreach (JObject orderObject in firstResponseJson["result"]["data"].Children())
                     {
-                        orderList.Add(new Order(orderObject));
+                        orderList.Add(new Order(orderObject, this));
                     }
                 }
                 else
@@ -105,7 +105,7 @@ namespace ByBitClientLib.ClientObjectModel
 
                     foreach (JObject orderObject in responseJson["result"]["data"].Children())
                     {
-                        orderList.Add(new Order(orderObject));
+                        orderList.Add(new Order(orderObject, this));
                     }
                 }
             }
@@ -134,7 +134,7 @@ namespace ByBitClientLib.ClientObjectModel
                 request["trigger_by"] = triggerBy.ToString();
             }
 
-            return new Order(ExecuteWithRetry(request));
+            return new Order(ExecuteWithRetry(request), this);
         }
 
         public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Decimal entryPrice, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
@@ -148,7 +148,7 @@ namespace ByBitClientLib.ClientObjectModel
                 request["trigger_by"] = triggerBy.ToString();
             }
 
-            return new Order(ExecuteWithRetry(request));
+            return new Order(ExecuteWithRetry(request), this);
         }
 
         public String CancelConditionalOrder(String CryptoPair, String orderId)
@@ -200,7 +200,7 @@ namespace ByBitClientLib.ClientObjectModel
                 {
                     foreach (JObject orderObject in firstResponseJson["result"]["data"].Children())
                     {
-                        orderList.Add(new Order(orderObject));
+                        orderList.Add(new Order(orderObject, this));
                     }
                 }
                 else
@@ -210,7 +210,7 @@ namespace ByBitClientLib.ClientObjectModel
 
                     foreach (JObject orderObject in responseJson["result"]["data"].Children())
                     {
-                        orderList.Add(new Order(orderObject));
+                        orderList.Add(new Order(orderObject, this));
                     }
                 }
             }
