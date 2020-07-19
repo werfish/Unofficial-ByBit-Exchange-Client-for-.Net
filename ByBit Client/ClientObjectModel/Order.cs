@@ -87,7 +87,7 @@ namespace ByBitClientLib.ClientObjectModel
             this.TimeInForce = connManager.getTimeInForce((String)json["time_in_force"]);
             this.OrderStatus = connManager.getOrderStatus((String)json["order_status"]);
             this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["stop_order_status"]);
-            this.TriggerPriceType = ConnectionManager.TriggerPriceType.NONE;
+            this.TriggerPriceType = connManager.getTriggerPriceType((String)json["trigger_by"]);
         }
 
         private ConnectionManager.OrderType DetermineOrderType(JObject json, Boolean isConditional)
