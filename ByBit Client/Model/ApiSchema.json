@@ -287,10 +287,6 @@
           "type": "String",
           "isRequired": true
         },
-        "order_id": {
-          "type": "String",
-          "isRequired": false
-        },
         "symbol": {
           "type": "String",
           "isRequired": true

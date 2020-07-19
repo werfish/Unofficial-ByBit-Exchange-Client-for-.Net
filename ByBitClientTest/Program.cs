@@ -196,11 +196,11 @@ namespace ByBitClientTest
             Thread.Sleep(delay);
 
             //Required for reduce only Limit Orders
-            log.AppendLine(manager.MarketOrder(crypto, 5, false, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            log.AppendLine(manager.MarketOrder(crypto, 5).Response);
             Thread.Sleep(delay);
 
             //3rd Test, Limit Order, with Different Params
-            Order first = manager.LimitOrder(crypto, -10, 500, false, ConnectionManager.TimeInForce.GoodTillCancel);
+            Order first = manager.LimitOrder(crypto, -10, 500.5, false, ConnectionManager.TimeInForce.GoodTillCancel);
             log.AppendLine(first.Response);
             Thread.Sleep(delay);
             log.AppendLine(manager.LimitOrder(crypto, -10, 550.55, false, ConnectionManager.TimeInForce.FillOrKill).Response);
@@ -215,25 +215,35 @@ namespace ByBitClientTest
             log.AppendLine(last.Response);
             Thread.Sleep(delay);
 
-            //4th test, Querieng active order test
+            //4th Test, Update Active Order (does not make sense for a market order)
+            log.AppendLine(manager.UpdateLimitOrder(first,450.5,0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateLimitOrder(first.CryptoPair,first.OrderId, 0,-5));
+            Thread.Sleep(delay);
+            //log.AppendLine(manager.UpdateLimitOrder(last, 100, 0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateLimitOrder(last.CryptoPair, last.OrderId, 0, 1));
+            Thread.Sleep(delay);
+
+            //5th test, Querieng active order test
             log.AppendLine("----------------QUERY ACTIVE ORDER TEST--------------------");
             log.AppendLine(manager.QueryActiveOrder(first.CryptoPair, first.OrderId));
             log.AppendLine("---END query Active Order TEST--------");
 
 
-            //5th Test, Cancel the 1st Limit Order and the last Limit Orders
+            //6th Test, Cancel the 1st Limit Order and the last Limit Orders
             log.AppendLine(manager.CancelActiveOrder(first.CryptoPair,first.OrderId));
             Thread.Sleep(delay);
             log.AppendLine(manager.CancelActiveOrder(last.CryptoPair, last.OrderId));
             Thread.Sleep(delay);
 
 
-            //6th Test, Cancel All Active Orders and then close position
+            //7th Test, Cancel All Active Orders and then close position
             log.AppendLine(manager.CancelAllActiveOrders(first.CryptoPair));
             Thread.Sleep(delay);
             log.AppendLine(manager.LiquidatePosition(crypto).ToString());
 
-            //7th test, Create 65 Limit Orders and Check active Order Data
+            //8th test, Create 65 Limit Orders and Check active Order Data
             for (int i = 0; i < 65; i++)
             {
                 manager.LimitOrder(crypto, 1, 70 + i, false, ConnectionManager.TimeInForce.GoodTillCancel);
@@ -265,13 +275,25 @@ namespace ByBitClientTest
             Thread.Sleep(delay);
             log.AppendLine(manager.ConditionalMarketOrder(crypto, 1, 400.5, 380.55, ConnectionManager.TriggerPriceType.LastPrice, ConnectionManager.TimeInForce.FillOrKill).Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 70.5, 80.15, ConnectionManager.TriggerPriceType.MarkPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 350.5, 80.15, ConnectionManager.TriggerPriceType.MarkPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
             Thread.Sleep(delay);
-            Order last = manager.ConditionalMarketOrder(crypto, -1, 350, 320, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.ImmediateOrCancel);
+            Order last = manager.ConditionalMarketOrder(crypto, -1, 70, 90, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.ImmediateOrCancel);
             log.AppendLine(last.Response);
             Thread.Sleep(delay);
 
-            //2nd Test, Update conditional order with new information
+            //2nd Test, Update ConditionalMarket order with new information
+            log.AppendLine(manager.UpdateConditionalOrder(first, 0, 390.5, 0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(first.CryptoPair, first.OrderId, 2, 0,0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(first.CryptoPair, first.OrderId, 10, 420, 0));
+            Thread.Sleep(5000);
+            log.AppendLine(manager.UpdateConditionalOrder(last, -2, 0, 0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(last.CryptoPair,last.OrderId, 5, 100, 0)); //Updating Conditional order with a price Higher than Market will make it fill
+            Thread.Sleep(delay);
+
+            manager.LiquidatePosition(crypto);
 
             //3rd Test, Cancel the 1st Condtional Limit Order and the last Conditional Limit Orders
             log.AppendLine(manager.CancelConditionalOrder(first.CryptoPair, first.OrderId));
@@ -301,6 +323,36 @@ namespace ByBitClientTest
             log.AppendLine(lastLimit.Response);
             Thread.Sleep(delay);
 
+            //6th Test, Update ConditionalLimit order with new information
+            log.AppendLine(manager.UpdateConditionalOrder(firstLimit, -5, 0, 0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(firstLimit.CryptoPair, firstLimit.OrderId, 0, 250.5, 300));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(firstLimit.CryptoPair, firstLimit.OrderId, -10, 420, 400));
+            Thread.Sleep(5000);
+            log.AppendLine(manager.UpdateConditionalOrder(lastLimit, 2, 280, 0));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(lastLimit.CryptoPair, lastLimit.OrderId, 0, 260, 340));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.UpdateConditionalOrder(lastLimit.CryptoPair, lastLimit.OrderId, 1, 260, 100));
+            Thread.Sleep(delay);
+
+            //7th test, Querieng Conditional order test
+            log.AppendLine("----------------QUERY Conditional ORDER TEST--------------------");
+            log.AppendLine(manager.QueryConditionalOrder(first.CryptoPair, first.OrderId));
+            log.AppendLine("---END query Conditional Order TEST--------");
+
+            log.AppendLine("----------------GET CONDITIONAL ORDER TEST LIST----------------------------------------");
+
+            List<Order> conditionalOrderList = manager.GetConditionalOrders(crypto);
+
+            foreach (Order orderData in conditionalOrderList)
+            {
+                log.AppendLine(orderData.Response);
+            }
+
+            manager.CancelAllConditionalOrders(crypto);
+            log.AppendLine("----------------END OF CONDTIONAL ORDER DATA TESTS-------------------------------");
 
             Console.WriteLine(log.ToString());
         }

@@ -49,22 +49,28 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public String UpdateLimitOrder(Order order, Decimal newEntryPrice, Decimal newQuantity)
+        public String UpdateLimitOrder(String cryptoPair, String orderId, Double newEntryPrice, Int32 newQuantity)
         {
             ByBitRequest request = client.CreateRequest("POST_ReplaceActiveOrder");
-            request.AddRequired(order.OrderId, order.CryptoPair);
+            request.AddRequired(orderId, cryptoPair);
 
-            if (newEntryPrice != 0m)
+            if (newEntryPrice != 0)
             {
-                request["p_r_price"] = newEntryPrice;
+                request["p_r_price"] = newEntryPrice.ToString();
             }
 
             if (newQuantity != 0)
             {
-                request["p_r_qty"] = newQuantity;
+                request["p_r_qty"] = Math.Abs(newQuantity);
             }
 
             return ExecuteWithRetry(request);
+        }
+
+
+        public String UpdateLimitOrder(Order order, Double newEntryPrice, Int32 newQuantity)
+        {
+            return UpdateLimitOrder(order.CryptoPair, order.OrderId, newEntryPrice, newQuantity);
         }
 
         //GET_QueryActiveOrder
@@ -168,27 +174,32 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public String UpdateConditionalOrder(String cryptoPair, String orderId,int newOrderQuantity, Decimal newOrderPrice, Decimal newTriggerPrice)
+        public String UpdateConditionalOrder(String cryptoPair, String orderId,Int32 newOrderQuantity, Double newTriggerPrice, Double newOrderPrice)
         {
             ByBitRequest request = client.CreateRequest("POST_ReplaceConditionalOrder");
             request.AddRequired(orderId, cryptoPair);
 
             if (newOrderQuantity != 0)
             {
-                request["p_r_qty"] = newOrderQuantity;
+                request["p_r_qty"] = Math.Abs(newOrderQuantity);
             }
 
             if (newOrderPrice != 0)
             {
-                request["p_r_price"] = newOrderPrice;
+                request["p_r_price"] = newOrderPrice.ToString();
             }
 
             if (newTriggerPrice != 0)
             {
-                request["p_r_trigger_price"] = newTriggerPrice;
+                request["p_r_trigger_price"] = newTriggerPrice.ToString();
             }
             
             return ExecuteWithRetry(request);
+        }
+
+        public String UpdateConditionalOrder(Order order, Int32 newOrderQuantity, Double newTriggerPrice, Double newOrderPrice)
+        {
+            return UpdateConditionalOrder(order.CryptoPair, order.OrderId, newOrderQuantity, newTriggerPrice, newOrderPrice);
         }
 
         public List<Order> GetConditionalOrders(String cryptoPair)
