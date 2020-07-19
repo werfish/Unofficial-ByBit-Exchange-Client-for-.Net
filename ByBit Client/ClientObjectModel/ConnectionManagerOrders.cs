@@ -124,10 +124,10 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
-            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), beforeTriggerPrice, triggerPrice, timeInForce.ToString());
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(), triggerPrice.ToString(), timeInForce.ToString());
 
             if (triggerBy != TriggerPriceType.LastPrice)
             {
@@ -137,11 +137,11 @@ namespace ByBitClientLib.ClientObjectModel
             return new Order(ExecuteWithRetry(request), this);
         }
 
-        public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Decimal entryPrice, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Double entryPrice, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
-            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice, triggerPrice, timeInForce.ToString());
-            request["price"] = entryPrice;
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(), triggerPrice.ToString(), timeInForce.ToString());
+            request["price"] = entryPrice.ToString();
 
             if (triggerBy != TriggerPriceType.LastPrice)
             {
@@ -151,19 +151,27 @@ namespace ByBitClientLib.ClientObjectModel
             return new Order(ExecuteWithRetry(request), this);
         }
 
-        public String CancelConditionalOrder(String CryptoPair, String orderId)
+        public String CancelConditionalOrder(String cryptoPair, String orderId)
         {
             ByBitRequest request = client.CreateRequest("POST_CancelConditionalOrder");
-            request.AddRequired(CryptoPair);
+            request.AddRequired(cryptoPair);
             request["stop_order_id"] = orderId;
 
             return ExecuteWithRetry(request);
         }
 
-        public String UpdateConditionalOrder(String CryptoPair, String orderId,int newOrderQuantity, Decimal newOrderPrice, Decimal newTriggerPrice)
+        public String CancelAllConditionalOrders(String cryptoPair)
+        {
+            ByBitRequest request = client.CreateRequest("POST_CancelAllConditionalOrders");
+            request.AddRequired(cryptoPair);
+
+            return ExecuteWithRetry(request);
+        }
+
+        public String UpdateConditionalOrder(String cryptoPair, String orderId,int newOrderQuantity, Decimal newOrderPrice, Decimal newTriggerPrice)
         {
             ByBitRequest request = client.CreateRequest("POST_ReplaceConditionalOrder");
-            request.AddRequired(orderId, CryptoPair);
+            request.AddRequired(orderId, cryptoPair);
 
             if (newOrderQuantity != 0)
             {

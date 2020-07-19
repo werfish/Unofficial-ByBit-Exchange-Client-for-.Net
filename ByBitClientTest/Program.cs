@@ -260,15 +260,46 @@ namespace ByBitClientTest
             StringBuilder log = new StringBuilder();
 
             //1st Test, Conditional MarketOrder, with different Params
-            log.AppendLine(manager.ConditionalMarketOrder(crypto, 1, 450,400,ConnectionManager.TriggerPriceType.IndexPrice,ConnectionManager.TimeInForce.GoodTillCancel).Response);
+            Order first = manager.ConditionalMarketOrder(crypto, 1, 450.15, 400.30, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.GoodTillCancel);
+            log.AppendLine(first.Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.ConditionalMarketOrder(crypto, 1, 400, 380, ConnectionManager.TriggerPriceType.LastPrice, ConnectionManager.TimeInForce.FillOrKill).Response);
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, 1, 400.5, 380.55, ConnectionManager.TriggerPriceType.LastPrice, ConnectionManager.TimeInForce.FillOrKill).Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 70, 80, ConnectionManager.TriggerPriceType.MarkPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 70.5, 80.15, ConnectionManager.TriggerPriceType.MarkPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 70, 100, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Order last = manager.ConditionalMarketOrder(crypto, -1, 350, 320, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.ImmediateOrCancel);
+            log.AppendLine(last.Response);
             Thread.Sleep(delay);
 
+            //2nd Test, Update conditional order with new information
+
+            //3rd Test, Cancel the 1st Condtional Limit Order and the last Conditional Limit Orders
+            log.AppendLine(manager.CancelConditionalOrder(first.CryptoPair, first.OrderId));
+            Thread.Sleep(delay);
+            log.AppendLine(manager.CancelConditionalOrder(last.CryptoPair, last.OrderId));
+            Thread.Sleep(delay);
+
+
+            //4th Test, Cancel All Conditional Order
+            log.AppendLine(manager.CancelAllConditionalOrders(first.CryptoPair));
+            Thread.Sleep(delay);
+
+
+            //5th Test, Limit Order, with Different Params
+            Order firstLimit = manager.ConditionalLimitOrder(crypto, -1,300.5,280,270, ConnectionManager.TriggerPriceType.LastPrice, ConnectionManager.TimeInForce.GoodTillCancel);
+            log.AppendLine(firstLimit.Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalLimitOrder(crypto, -1, 300, 320, 310, ConnectionManager.TriggerPriceType.MarkPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalLimitOrder(crypto, -1, 100, 320, 310, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.GoodTillCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalLimitOrder(crypto, 1, 100, 120, 125, ConnectionManager.TriggerPriceType.LastPrice, ConnectionManager.TimeInForce.FillOrKill).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalLimitOrder(crypto, 1, 300, 320, 310, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+            Order lastLimit = manager.ConditionalLimitOrder(crypto, 1, 300, 280, 270, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.FillOrKill);
+            log.AppendLine(lastLimit.Response);
+            Thread.Sleep(delay);
 
 
             Console.WriteLine(log.ToString());
