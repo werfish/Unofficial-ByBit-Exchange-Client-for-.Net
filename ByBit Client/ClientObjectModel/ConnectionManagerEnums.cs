@@ -9,7 +9,7 @@ namespace ByBitClientLib.ClientObjectModel
         public enum WalletFundType { Deposit, Withdraw, RealisedPNL, Commission, Refund, Prize, ExchangeOrderWithdraw, ExchangeOrderDeposit }
         public enum WithdrawStatus { ToBeConfirmed, UnderReview, Pending, Success, CancelByUser, Reject , Expire }
         public enum TriggerPriceType { LastPrice, IndexPrice, MarkPrice, NONE}
-        public enum OrderStatus { Created, Rejected, New , PartiallyFilled , Filled, Cancelled , PendingCancel }
+        public enum OrderStatus { Created, Rejected, New , PartiallyFilled , Filled, Cancelled , PendingCancel, NONE }
         public enum StopOrderStatus { Active , Untriggered, Triggered , Cancelled , Rejected , Deactivated , NONE}
         public enum CancelType { CancelByUser, CancelByReduceOnly, CancelByPrepareLiq, CancelAllBeforeLiq, CancelByPrepareAdl, CancelAllBeforeAdl, CancelByAdmin, CancelByTpSlTsClear, CancelByPzSideCh }
         public enum CreateType { CreateByUser, CreateByClosing, CreateByAdminClosing, CreateByStopOrder, CreateByTakeProfit, CreateByStopLoss, CreateByTrailingStop, CreateByLiq, CreateByAdl_PassThrough, CreateByTakeOver_PassThrough }

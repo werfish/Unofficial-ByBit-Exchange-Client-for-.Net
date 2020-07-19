@@ -42,7 +42,9 @@ namespace ByBitClientTest
                 Console.WriteLine("6 -- Get Current Price!");
                 Console.WriteLine("7 -- Get Current Candle!");
                 Console.WriteLine("8 -- Check Server Time!");
-                Console.WriteLine("9 -- RUN CONNECTION MANAGER TESTS");
+                Console.WriteLine("9 -- RUN All CONNECTION MANAGER TESTS");
+                Console.WriteLine("10 -- RUN Active Order Connection Manager Test");
+                Console.WriteLine("11 -- RUN Conditional Order Connection Manager Test");
 
                 string Choice;
 
@@ -144,9 +146,18 @@ namespace ByBitClientTest
                     Console.WriteLine("Go Back? Press Enter");
                     Console.ReadLine();
                 }
-                if (Choice.Equals("9"))
+                else if (Choice.Equals("9"))
                 {
-                    ConnectionManagerTest(2000);
+                    ActiveordersConnectionManagerTest(2000);
+                    ConditionalOrdersConnectionManagerTest(2000);
+                }
+                else if (Choice.Equals("10"))
+                {
+                    ActiveordersConnectionManagerTest(2000);
+                }
+                else if (Choice.Equals("11"))
+                {
+                    ConditionalOrdersConnectionManagerTest(2000);
                 }
                 else
                 {
@@ -159,7 +170,7 @@ namespace ByBitClientTest
 
         }
 
-        public static void ConnectionManagerTest(int delay)
+        public static void ActiveordersConnectionManagerTest(int delay)
         {
             ConnectionManager manager = new ConnectionManager(client);
             String crypto = "ETHUSD";
@@ -238,6 +249,27 @@ namespace ByBitClientTest
 
             manager.CancelAllActiveOrders(crypto);
             log.AppendLine("----------------END OF ACTIVE ORDER DATA TESTS-------------------------------");
+
+            Console.WriteLine(log.ToString());
+        }
+
+        public static void ConditionalOrdersConnectionManagerTest(int delay)
+        {
+            ConnectionManager manager = new ConnectionManager(client);
+            String crypto = "ETHUSD";
+            StringBuilder log = new StringBuilder();
+
+            //1st Test, Conditional MarketOrder, with different Params
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, 1, 450,400,ConnectionManager.TriggerPriceType.IndexPrice,ConnectionManager.TimeInForce.GoodTillCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, 1, 400, 380, ConnectionManager.TriggerPriceType.LastPrice, ConnectionManager.TimeInForce.FillOrKill).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 70, 80, ConnectionManager.TriggerPriceType.MarkPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+            log.AppendLine(manager.ConditionalMarketOrder(crypto, -1, 70, 100, ConnectionManager.TriggerPriceType.IndexPrice, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            Thread.Sleep(delay);
+
+
 
             Console.WriteLine(log.ToString());
         }

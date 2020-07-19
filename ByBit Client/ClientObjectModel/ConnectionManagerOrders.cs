@@ -137,7 +137,7 @@ namespace ByBitClientLib.ClientObjectModel
             return new Order(ExecuteWithRetry(request), this);
         }
 
-        public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Decimal entryPrice, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Decimal entryPrice, Decimal triggerPrice, Decimal beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice, triggerPrice, timeInForce.ToString());

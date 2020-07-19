@@ -85,8 +85,15 @@ namespace ByBitClientLib.ClientObjectModel
             this.Price = (Decimal)json["price"];
             this.Quantity = (int)json["qty"];
             this.TimeInForce = connManager.getTimeInForce((String)json["time_in_force"]);
-            this.OrderStatus = connManager.getOrderStatus((String)json["order_status"]);
-            this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["stop_order_status"]);
+            this.OrderStatus = ConnectionManager.OrderStatus.NONE;
+            if ((String)json["stop_order_status"] != null)
+            {
+                this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["stop_order_status"]);
+            }
+            else
+            {
+                this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["order_status"]);
+            }
             this.TriggerPriceType = connManager.getTriggerPriceType((String)json["trigger_by"]);
         }
 
