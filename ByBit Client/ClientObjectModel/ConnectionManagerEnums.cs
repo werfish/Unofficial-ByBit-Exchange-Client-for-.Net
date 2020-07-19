@@ -10,7 +10,7 @@ namespace ByBitClientLib.ClientObjectModel
         public enum WithdrawStatus { ToBeConfirmed, UnderReview, Pending, Success, CancelByUser, Reject , Expire }
         public enum TriggerPriceType { LastPrice, IndexPrice, MarkPrice, NONE}
         public enum OrderStatus { Created, Rejected, New , PartiallyFilled , Filled, Cancelled , PendingCancel }
-        public enum StopOrderType { Active , Untriggered, Triggered , Cancelled , Rejected , Deactivated , NONE}
+        public enum StopOrderStatus { Active , Untriggered, Triggered , Cancelled , Rejected , Deactivated , NONE}
         public enum CancelType { CancelByUser, CancelByReduceOnly, CancelByPrepareLiq, CancelAllBeforeLiq, CancelByPrepareAdl, CancelAllBeforeAdl, CancelByAdmin, CancelByTpSlTsClear, CancelByPzSideCh }
         public enum CreateType { CreateByUser, CreateByClosing, CreateByAdminClosing, CreateByStopOrder, CreateByTakeProfit, CreateByStopLoss, CreateByTrailingStop, CreateByLiq, CreateByAdl_PassThrough, CreateByTakeOver_PassThrough }
         public enum ExecType { Trade, AdlTrade, Funding, BustTrade }
@@ -36,9 +36,9 @@ namespace ByBitClientLib.ClientObjectModel
             return (TimeInForce)Enum.Parse(typeof(TimeInForce), timeInForce);
         }
 
-        internal StopOrderType getStopOrderType(String stopOrderType)
+        internal StopOrderStatus getStopOrderStatus(String stopOrderStatus)
         {
-            return (StopOrderType)Enum.Parse(typeof(StopOrderType), stopOrderType);
+            return (StopOrderStatus)Enum.Parse(typeof(StopOrderStatus), stopOrderStatus);
         }
 
         internal Side getSide(String side)

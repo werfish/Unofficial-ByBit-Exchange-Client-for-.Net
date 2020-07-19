@@ -15,7 +15,7 @@ namespace ByBitClientLib.ClientObjectModel
         public String CryptoPair;
         public ConnectionManager.Side Side;
         public ConnectionManager.OrderType OrderType;
-        public ConnectionManager.StopOrderType ConditionalOrderType;
+        public ConnectionManager.StopOrderStatus ConditionalOrderStatus;
         public ConnectionManager.TriggerPriceType TriggerPriceType;
         public Decimal Price;
         int Quantity;
@@ -70,7 +70,7 @@ namespace ByBitClientLib.ClientObjectModel
             this.Quantity = (int)json["qty"];
             this.TimeInForce = connManager.getTimeInForce((String)json["time_in_force"]);
             this.OrderStatus = connManager.getOrderStatus((String)json["order_status"]);
-            this.ConditionalOrderType = ConnectionManager.StopOrderType.NONE;
+            this.ConditionalOrderStatus = ConnectionManager.StopOrderStatus.NONE;
             this.TriggerPriceType = ConnectionManager.TriggerPriceType.NONE;
         }
 
@@ -86,7 +86,7 @@ namespace ByBitClientLib.ClientObjectModel
             this.Quantity = (int)json["qty"];
             this.TimeInForce = connManager.getTimeInForce((String)json["time_in_force"]);
             this.OrderStatus = connManager.getOrderStatus((String)json["order_status"]);
-            this.ConditionalOrderType = ConnectionManager.StopOrderType.NONE;
+            this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["stop_order_status"]);
             this.TriggerPriceType = ConnectionManager.TriggerPriceType.NONE;
         }
 
