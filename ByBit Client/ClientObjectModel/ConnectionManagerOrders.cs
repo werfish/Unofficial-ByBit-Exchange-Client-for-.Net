@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json.Linq;
@@ -26,7 +27,7 @@ namespace ByBitClientLib.ClientObjectModel
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), timeInForce.ToString());
-            request["price"] = entryPrice.ToString();
+            request["price"] = entryPrice.ToString(CultureInfo.InvariantCulture);
             request["reduce_only"] = reduceOnly.ToString();
 
             return new Order(ExecuteWithRetry(request),this);
@@ -56,7 +57,7 @@ namespace ByBitClientLib.ClientObjectModel
 
             if (newEntryPrice != 0)
             {
-                request["p_r_price"] = newEntryPrice.ToString();
+                request["p_r_price"] = newEntryPrice.ToString(CultureInfo.InvariantCulture);
             }
 
             if (newQuantity != 0)
@@ -133,7 +134,7 @@ namespace ByBitClientLib.ClientObjectModel
         public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
-            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(), triggerPrice.ToString(), timeInForce.ToString());
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(CultureInfo.InvariantCulture), triggerPrice.ToString(CultureInfo.InvariantCulture), timeInForce.ToString());
 
             if (triggerBy != TriggerPriceType.LastPrice)
             {
@@ -146,8 +147,8 @@ namespace ByBitClientLib.ClientObjectModel
         public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Double entryPrice, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
-            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(), triggerPrice.ToString(), timeInForce.ToString());
-            request["price"] = entryPrice.ToString();
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(CultureInfo.InvariantCulture), triggerPrice.ToString(CultureInfo.InvariantCulture), timeInForce.ToString());
+            request["price"] = entryPrice.ToString(CultureInfo.InvariantCulture);
 
             if (triggerBy != TriggerPriceType.LastPrice)
             {
@@ -186,12 +187,12 @@ namespace ByBitClientLib.ClientObjectModel
 
             if (newOrderPrice != 0)
             {
-                request["p_r_price"] = newOrderPrice.ToString();
+                request["p_r_price"] = newOrderPrice.ToString(CultureInfo.InvariantCulture);
             }
 
             if (newTriggerPrice != 0)
             {
-                request["p_r_trigger_price"] = newTriggerPrice.ToString();
+                request["p_r_trigger_price"] = newTriggerPrice.ToString(CultureInfo.InvariantCulture);
             }
             
             return ExecuteWithRetry(request);
@@ -256,20 +257,20 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public String SetStopLoss(String CryptoPair, Decimal stopPrice)
+        public String SetStopLoss(String CryptoPair, Double stopPrice)
         {
             ByBitRequest request = client.CreateRequest("POST_SetTrading-Stop");
             request.AddRequired(CryptoPair);
-            request["stop_loss"] = (float)stopPrice;
+            request["stop_loss"] = stopPrice.ToString(CultureInfo.InvariantCulture);
 
             return ExecuteWithRetry(request);
         }
 
-        public String SetTrailingStopLoss(String CryptoPair, Decimal usdAmount)
+        public String SetTrailingStopLoss(String CryptoPair, Double usdAmount)
         {
             ByBitRequest request = client.CreateRequest("POST_SetTrading-Stop");
             request.AddRequired(CryptoPair);
-            request["trailing_stop"] = usdAmount;
+            request["trailing_stop"] = usdAmount.ToString(CultureInfo.InvariantCulture);
 
             return ExecuteWithRetry(request);
         }
