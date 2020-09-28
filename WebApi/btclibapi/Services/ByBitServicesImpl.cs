@@ -8,8 +8,8 @@ namespace btclibapi.Services
     public class ByBitServicesImpl
     {
         private ILogger<ByBitServicesImpl> _logger = null;
-        private readonly String apiKey = "tFAO5jGzHwdrSwUOz4";
-        private readonly String apiSecurity = "OJGYMUtNDLpo8LjZU61TQBpxkefDrGkWCoX4";
+        private readonly String apiKey = ""; // .env class
+        private readonly String apiSecurity = ""; // .env class
         private readonly String apiUrl = "https://api.bybit.com";
 
         private ByBitClient client = null;
