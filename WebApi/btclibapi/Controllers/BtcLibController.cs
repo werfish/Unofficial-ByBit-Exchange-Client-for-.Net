@@ -28,7 +28,7 @@ namespace btclibapi.Controllers
         [Route("v1/ChangeLeverage")]
         public String ChangeLeverage(String cryptoPair, int leverage)
         {
-            // https://localhost:5001/api/BtcLibControllers/FirstTest?cryptoPair=ETHUSD&leverage=25
+            // api/BtcLibControllers/FirstTest?cryptoPair=ETHUSD&leverage=25
             try
             {
                 Console.WriteLine("cryptoPair={0}, leverage={1}", cryptoPair, leverage);
@@ -45,8 +45,8 @@ namespace btclibapi.Controllers
         [Route("v1/MarketOrder")]
         public String MarketOrder(String cryptoPair, int contracts)
         {
-            // https://localhost:5001/api/BtcLibControllers/MarketOrder?cryptoPair=ETHUSD&contracts=10
-            // https://localhost:5001/api/BtcLibControllers/MarketOrder?cryptoPair=ETHUSD&contracts=-10
+            // api/BtcLibControllers/MarketOrder?cryptoPair=ETHUSD&contracts=10
+            // api/BtcLibControllers/MarketOrder?cryptoPair=ETHUSD&contracts=-10
             try
             {
                 Console.WriteLine("cryptoPair={0}, contracts={1}", cryptoPair, contracts);
@@ -63,7 +63,7 @@ namespace btclibapi.Controllers
         [Route("v1/LimitOrder")]
         public String LimitOrder(string cryptoPair, int contracts, double entryPrice)
         {
-            // https://localhost:5001/api/btclib/v1/LimitOrder?cryptoPair=ETHUSD&contracts=10&entryPrice=231.9
+            // api/btclib/v1/LimitOrder?cryptoPair=ETHUSD&contracts=10&entryPrice=231.9
             try
             {
                 Console.WriteLine("cryptoPair={0}, contracts={1}, entryPrice={2}", cryptoPair, contracts, entryPrice);
@@ -80,7 +80,7 @@ namespace btclibapi.Controllers
         [Route("v1/GetPosition/{cryptoPair}")]
         public ActionResult<String> GetPosition(String cryptoPair)
         {
-            // https://localhost:5001/api/btclib/v1/GetPosition/ETHUSD
+            // api/btclib/v1/GetPosition/ETHUSD
             try
             {
                 _logger.LogInformation("[GetPosition] cryptoPair={0}", cryptoPair);
@@ -101,7 +101,7 @@ namespace btclibapi.Controllers
         [Route("v1/ClosePosition")]
         public String ClosePosition(String cryptoPair)
         {
-            // https://localhost:5001/api/BtcLibControllers/ClosePosition?cryptoPair=ETHUSD
+            // api/BtcLibControllers/ClosePosition?cryptoPair=ETHUSD
             try
             {
                 Console.WriteLine("cryptoPair={0}", cryptoPair);
@@ -134,8 +134,7 @@ namespace btclibapi.Controllers
         [Route("v1/Version")]
         public String Version()
         {
-            String version = "1.0.0.0";
-            return version;
+            return "1.0.0.0";
         }
     }
 }
