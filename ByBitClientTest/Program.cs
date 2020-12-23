@@ -28,10 +28,11 @@ namespace ByBitClientTest
             string API_URL = (string)Api_JSON["API_URL"];
 
             isRunning = true;
-            client = new ByBitClient(API_KEY,API_SECRET,API_URL);
+            client = new ByBitClient(API_KEY,API_SECRET,API_URL, "5000");
 
             while (isRunning)
             {
+                Console.Clear();
                 Console.WriteLine("Hello BytBit World");
                 Console.WriteLine("Select Action: ");
                 Console.WriteLine("1 -- Make an order!");
@@ -129,7 +130,6 @@ namespace ByBitClientTest
                     string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
-                    File.WriteAllText("C:\\temp\\lol.json", order,new System.Text.UTF8Encoding());
                     Console.WriteLine("Current Candle Fetched!!");
                     Console.WriteLine("Go Back? Press Enter");
                     Console.ReadLine();
@@ -180,17 +180,17 @@ namespace ByBitClientTest
             //1st Test Market Order, with different Params
             log.AppendLine(manager.MarketOrder(crypto, 1,false,ConnectionManager.TimeInForce.GoodTillCancel).Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.MarketOrder(crypto, 2, false, ConnectionManager.TimeInForce.FillOrKill).Response);
+            //log.AppendLine(manager.MarketOrder(crypto, 2, false, ConnectionManager.TimeInForce.FillOrKill).Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.MarketOrder(crypto, -5, false, ConnectionManager.TimeInForce.PostOnly).Response);
+            //log.AppendLine(manager.MarketOrder(crypto, -5, false, ConnectionManager.TimeInForce.PostOnly).Response);
             Thread.Sleep(delay);
-            log.AppendLine(manager.MarketOrder(crypto, 1,true, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            //log.AppendLine(manager.MarketOrder(crypto, 1,true, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
             Thread.Sleep(delay);
 
             //2nd Test, Close Position
-            log.AppendLine(manager.LiquidatePosition(crypto).ToString());
+            //log.AppendLine(manager.LiquidatePosition(crypto).ToString());
             Thread.Sleep(delay);
-            log.AppendLine(manager.MarketOrder(crypto, 1, false, ConnectionManager.TimeInForce.ImmediateOrCancel).Response);
+            log.AppendLine(manager.MarketOrder(crypto, 1, false, ConnectionManager.TimeInForce.GoodTillCancel).Response);
             Thread.Sleep(delay);
             log.AppendLine(manager.LiquidatePosition(crypto).ToString());
             Thread.Sleep(delay);
