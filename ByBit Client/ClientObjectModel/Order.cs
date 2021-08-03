@@ -10,24 +10,24 @@ namespace ByBitClientLib.ClientObjectModel
         //To Accomodate functionality from inside this class a ConnectionManager object is needed
         private ConnectionManager connManager;
 
-        public String OrderId;
+        public String OrderId { get; private set; }
         //public String OrderLinkId;
-        public String CryptoPair;
-        public ConnectionManager.Side Side;
-        public ConnectionManager.OrderType OrderType;
-        public ConnectionManager.StopOrderStatus ConditionalOrderStatus;
-        public ConnectionManager.TriggerPriceType TriggerPriceType;
-        public Decimal Price;
-        int Quantity;
-        public ConnectionManager.TimeInForce TimeInForce;
-        public ConnectionManager.OrderStatus OrderStatus;
-
-        public String Response;
+        public String CryptoPair { get; private set; }
+        public ConnectionManager.Side Side { get; private set; }
+        public ConnectionManager.OrderType OrderType { get; private set; }
+        public ConnectionManager.StopOrderStatus ConditionalOrderStatus { get; private set; }
+        public ConnectionManager.TriggerPriceType TriggerPriceType { get; private set; }
+        public Decimal Price { get; private set; }
+        public int Quantity { get; private set; }
+        public ConnectionManager.TimeInForce TimeInForce { get; private set; }
+        public ConnectionManager.OrderStatus OrderStatus { get; private set; }
+        
+        public String Response { get; private set; }
 
         //"created_at": "2019-11-30T11:03:43.452Z",
         //"updated_at": "2019-11-30T11:03:43.455Z"
 
-        public Order(String Response, ConnectionManager connManager)
+        internal Order(String Response, ConnectionManager connManager)
         {
             this.connManager = connManager;
             JObject json = JObject.Parse(Response);
@@ -89,10 +89,6 @@ namespace ByBitClientLib.ClientObjectModel
             if ((String)json["stop_order_status"] != null)
             {
                 this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["stop_order_status"]);
-            }
-            else
-            {
-                this.ConditionalOrderStatus = connManager.getStopOrderStatus((String)json["order_status"]);
             }
             this.TriggerPriceType = connManager.getTriggerPriceType((String)json["trigger_by"]);
         }

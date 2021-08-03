@@ -14,21 +14,39 @@ namespace ByBitClientLib.ClientObjectModel
     {
         //Public methods, ORDERS Processing
 
-        public Order MarketOrder(String CryptoPair, int Contracts, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        public Order MarketOrder(String CryptoPair, int Contracts, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel, bool closeOntrigger = false)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), timeInForce.ToString());
-            request["reduce_only"] = reduceOnly.ToString();
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), timeInForce.ToString(), reduceOnly, closeOntrigger);
 
             return new Order(ExecuteWithRetry(request),this);
         }
 
-        public Order LimitOrder(String CryptoPair,int Contracts, double entryPrice, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
+        public Order GoLong(String CryptoPair, int Contracts)
+        {
+            return MarketOrder(CryptoPair, (int)Math.Abs(Contracts), false, TimeInForce.GoodTillCancel, false);
+        }
+
+        public Order GoShort(String CryptoPair, int Contracts)
+        {
+            return MarketOrder(CryptoPair, -(int)Math.Abs(Contracts), false, TimeInForce.GoodTillCancel, false);
+        }
+
+        public Order Buy(String CryptoPair, int Contracts)
+        {
+            return MarketOrder(CryptoPair, (int)Math.Abs(Contracts), false, TimeInForce.GoodTillCancel, false);
+        }
+
+        public Order Sell(String CryptoPair, int Contracts)
+        {
+            return MarketOrder(CryptoPair, -(int)Math.Abs(Contracts), false, TimeInForce.GoodTillCancel, false);
+        }
+
+        public Order LimitOrder(String CryptoPair,int Contracts, double entryPrice, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel, bool closeOntrigger = false)
         {
             ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), timeInForce.ToString());
+            request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), timeInForce.ToString(), reduceOnly, closeOntrigger);
             request["price"] = entryPrice.ToString(CultureInfo.InvariantCulture);
-            request["reduce_only"] = reduceOnly.ToString();
 
             return new Order(ExecuteWithRetry(request),this);
         }
@@ -36,8 +54,7 @@ namespace ByBitClientLib.ClientObjectModel
         public String CancelActiveOrder(String cryptoPair, String orderId)
         {
             ByBitRequest request = client.CreateRequest("POST_CancelActiveOrder");
-            request.AddRequired(cryptoPair);
-            request["order_id"] = orderId;
+            request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
         }
@@ -50,10 +67,13 @@ namespace ByBitClientLib.ClientObjectModel
             return ExecuteWithRetry(request);
         }
 
-        public String UpdateLimitOrder(String cryptoPair, String orderId, Double newEntryPrice, Int32 newQuantity)
+        public String UpdateLimitOrder(String cryptoPair, String orderId, Double newEntryPrice = 0, Int32 newQuantity = 0, Double takeProfit = 0, Double stopLoss = 0, TriggerPriceType tpTrigger = TriggerPriceType.LastPrice, TriggerPriceType slTrigger = TriggerPriceType.LastPrice)
         {
             ByBitRequest request = client.CreateRequest("POST_ReplaceActiveOrder");
             request.AddRequired(orderId, cryptoPair);
+
+            request["tp_trigger_by"] = tpTrigger.ToString();
+            request["sl_trigger_by"] = slTrigger.ToString();
 
             if (newEntryPrice != 0)
             {
@@ -63,6 +83,16 @@ namespace ByBitClientLib.ClientObjectModel
             if (newQuantity != 0)
             {
                 request["p_r_qty"] = Math.Abs(newQuantity);
+            }
+
+            if (takeProfit != 0)
+            {
+                request["take_profit"] = Math.Abs(newQuantity);
+            }
+
+            if (stopLoss != 0)
+            {
+                request["stop_loss"] = Math.Abs(newQuantity);
             }
 
             return ExecuteWithRetry(request);
@@ -78,57 +108,95 @@ namespace ByBitClientLib.ClientObjectModel
         public String QueryActiveOrder(String cryptoPair, String orderId)
         {
             ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
-            request.AddRequired(orderId, cryptoPair);
+            request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
+        }
+
+        public List<Order> QueryActiveOrders(String cryptoPair)
+        {
+            ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
+            request.AddRequired(cryptoPair);
+
+            String response = ExecuteWithRetry(request);
+            JObject responseJson = JObject.Parse(response);
+            List<Order> orderList = new List<Order>();
+
+            foreach (JObject orderObject in responseJson["result"].Children())
+            {
+                orderList.Add(new Order(orderObject, this));
+            }
+
+            return orderList;
         }
 
 
         //GET_GetActiveOrder
-        public List<Order> GetActiveOrders(String cryptoPair)
+        public List<Order> GetActiveOrderList(String cryptoPair, Int32 limit = 50)
         {
-            List<Order> orderList = new List<Order>();
-            Int32 currentPage = 0;
-            Int32 lastPage = 0;
-
-            String firstResponse = ActiveOrdersQuery(cryptoPair, 1);
-            JObject firstResponseJson = JObject.Parse(firstResponse);
-            currentPage = (int)firstResponseJson["result"]["current_page"];
-            lastPage = (int)firstResponseJson["result"]["last_page"];
-
-            for (int i = 1; i <= lastPage;i++)
-            {
-                if (i == 1)
-                {
-                    foreach (JObject orderObject in firstResponseJson["result"]["data"].Children())
-                    {
-                        orderList.Add(new Order(orderObject, this));
-                    }
-                }
-                else
-                {
-                    String response = ActiveOrdersQuery(cryptoPair, i);
-                    JObject responseJson = JObject.Parse(response);
-
-                    foreach (JObject orderObject in responseJson["result"]["data"].Children())
-                    {
-                        orderList.Add(new Order(orderObject, this));
-                    }
-                }
-            }
-
-            return orderList;
-
+            return GetActiveOrderList(cryptoPair, new OrderStatus[] { OrderStatus.NONE },limit);
         }
 
-        private String ActiveOrdersQuery(String cryptoPair, Int32 page)
+        public List<Order> GetActiveOrderList(String cryptoPair, OrderStatus[] status, Int32 limit = 50)
+        {
+            List<Order> orderList = new List<Order>();
+            String cursor = "";
+            //Console.ReadLine();
+
+            do
+            {
+                String response = GetActiveOrder(cryptoPair, status, cursor, limit);
+                JObject responseJson = JObject.Parse(response);
+
+                Console.WriteLine(response);
+
+                foreach (JObject orderObject in responseJson["result"]["data"].Children())
+                {
+                    orderList.Add(new Order(orderObject, this));
+                }
+
+                cursor = (String)responseJson["result"]["cursor"];
+
+            } while (orderList.Count == limit);
+
+            return orderList;
+        }
+
+
+
+        public String GetActiveOrder(String cryptoPair, OrderStatus[] status, String cursor = "", Int32 limit = 50, Direction direction = Direction.next)
         {
             ByBitRequest request = client.CreateRequest("GET_GetActiveOrder");
             request["symbol"] = cryptoPair;
-            request["page"] = page;
-            //request["limit"] = 50;    //Used the default whichy is 20
+            request["direction"] = direction.ToString();
+            request["limit"] = limit;    //Default is 20
+
+            if (!cursor.Equals(String.Empty)) 
+            {
+                request["cursor"] = cursor;
+            }
+
+            ProcessOrderStatus(request, status);
 
             return ExecuteWithRetry(request);
+        }
+
+        private void ProcessOrderStatus(ByBitRequest request,OrderStatus[] status) 
+        {
+            if (status[0] != OrderStatus.NONE)
+            {
+                StringBuilder strStatus = new StringBuilder();
+
+                foreach(OrderStatus stat in status)
+                {
+                    strStatus.Append(stat.ToString() + ",");
+                }
+
+                //Remove the last comma
+                strStatus.Remove(strStatus.Length - 1,1);
+
+                request["order_status"] = strStatus;
+            }
         }
 
         public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
@@ -161,8 +229,7 @@ namespace ByBitClientLib.ClientObjectModel
         public String CancelConditionalOrder(String cryptoPair, String orderId)
         {
             ByBitRequest request = client.CreateRequest("POST_CancelConditionalOrder");
-            request.AddRequired(cryptoPair);
-            request["stop_order_id"] = orderId;
+            request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
         }
@@ -203,76 +270,97 @@ namespace ByBitClientLib.ClientObjectModel
             return UpdateConditionalOrder(order.CryptoPair, order.OrderId, newOrderQuantity, newTriggerPrice, newOrderPrice);
         }
 
-        public List<Order> GetConditionalOrders(String cryptoPair)
+        public List<Order> GetConditionalOrderList(String cryptoPair, Int32 limit = 50)
         {
-            List<Order> orderList = new List<Order>();
-            Int32 currentPage = 0;
-            Int32 lastPage = 0;
-
-            String firstResponse = ConditionalOrdersQuery(cryptoPair, 1);
-            JObject firstResponseJson = JObject.Parse(firstResponse);
-            currentPage = (int)firstResponseJson["result"]["current_page"];
-            lastPage = (int)firstResponseJson["result"]["last_page"];
-
-            for (int i = 1; i <= lastPage; i++)
-            {
-                if (i == 1)
-                {
-                    foreach (JObject orderObject in firstResponseJson["result"]["data"].Children())
-                    {
-                        orderList.Add(new Order(orderObject, this));
-                    }
-                }
-                else
-                {
-                    String response = ConditionalOrdersQuery(cryptoPair, i);
-                    JObject responseJson = JObject.Parse(response);
-
-                    foreach (JObject orderObject in responseJson["result"]["data"].Children())
-                    {
-                        orderList.Add(new Order(orderObject, this));
-                    }
-                }
-            }
-
-            return orderList;
-
+            return GetConditionalOrderList(cryptoPair, new StopOrderStatus[] { StopOrderStatus.NONE }, limit);
         }
 
-        private String ConditionalOrdersQuery(String cryptoPair, Int32 page)
+        public List<Order> GetConditionalOrderList(String cryptoPair, StopOrderStatus[] status, Int32 limit = 50)
+        {
+            List<Order> orderList = new List<Order>();
+            String cursor = "";
+            //Console.ReadLine();
+
+            do
+            {
+                String response = GetConditionalOrder(cryptoPair, status, cursor, limit);
+                JObject responseJson = JObject.Parse(response);
+
+                Console.WriteLine(response);
+
+                foreach (JObject orderObject in responseJson["result"]["data"].Children())
+                {
+                    orderList.Add(new Order(orderObject, this));
+                }
+
+                cursor = (String)responseJson["result"]["cursor"];
+
+            } while (orderList.Count == limit);
+
+            return orderList;
+        }
+
+
+
+        public String GetConditionalOrder(String cryptoPair, StopOrderStatus[] status, String cursor = "", Int32 limit = 50, Direction direction = Direction.next)
         {
             ByBitRequest request = client.CreateRequest("GET_GetConditionalOrder");
             request["symbol"] = cryptoPair;
-            request["page"] = page;
-            //request["limit"] = 50;    //Used the default whichy is 20
+            request["direction"] = direction.ToString();
+            request["limit"] = limit;    //Default is 20
+
+            if (!cursor.Equals(String.Empty))
+            {
+                request["cursor"] = cursor;
+            }
+
+            ProcessStopOrderStatus(request, status);
 
             return ExecuteWithRetry(request);
         }
 
+        private void ProcessStopOrderStatus(ByBitRequest request, StopOrderStatus[] status)
+        {
+            if (status[0] != StopOrderStatus.NONE)
+            {
+                StringBuilder strStatus = new StringBuilder();
+
+                foreach (StopOrderStatus stat in status)
+                {
+                    strStatus.Append(stat.ToString() + ",");
+                }
+
+                //Remove the last comma
+                strStatus.Remove(strStatus.Length - 1, 1);
+
+                request["stop_order_status"] = strStatus;
+            }
+        }
+
+        //GET_QueryConditionalOrder
         public String QueryConditionalOrder(String cryptoPair, String orderId)
         {
-            ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
-            request.AddRequired(orderId, cryptoPair);
+            ByBitRequest request = client.CreateRequest("GET_QueryConditionalOrder");
+            request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
         }
 
-        public String SetStopLoss(String CryptoPair, Double stopPrice)
+        public List<Order> QueryConditionalOrders(String cryptoPair)
         {
-            ByBitRequest request = client.CreateRequest("POST_SetTrading-Stop");
-            request.AddRequired(CryptoPair);
-            request["stop_loss"] = stopPrice.ToString(CultureInfo.InvariantCulture);
+            ByBitRequest request = client.CreateRequest("GET_QueryConditionalOrder");
+            request.AddRequired(cryptoPair);
 
-            return ExecuteWithRetry(request);
-        }
+            String response = ExecuteWithRetry(request);
+            JObject responseJson = JObject.Parse(response);
+            List<Order> orderList = new List<Order>();
 
-        public String SetTrailingStopLoss(String CryptoPair, Double usdAmount)
-        {
-            ByBitRequest request = client.CreateRequest("POST_SetTrading-Stop");
-            request.AddRequired(CryptoPair);
-            request["trailing_stop"] = usdAmount.ToString(CultureInfo.InvariantCulture);
+            foreach (JObject orderObject in responseJson["result"].Children())
+            {
+                orderList.Add(new Order(orderObject, this));
+            }
 
-            return ExecuteWithRetry(request);
+            return orderList;
         }
 
         public Boolean LiquidatePosition(String CryptoPair)
@@ -301,8 +389,7 @@ namespace ByBitClientLib.ClientObjectModel
                 if (PositionSize != 0)
                 {
                     ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
-                    request.AddRequired(Side, CryptoPair, "Market", PositionSize, "GoodTillCancel");
-                    request["reduce_only"] = "True";
+                    request.AddRequired(Side, CryptoPair, "Market", PositionSize, TimeInForce.GoodTillCancel.ToString(), true, false);
                     ExecuteWithRetry(request, "Liquidation");
                 }
                 Thread.Sleep(RetryIntervalLiquidation);

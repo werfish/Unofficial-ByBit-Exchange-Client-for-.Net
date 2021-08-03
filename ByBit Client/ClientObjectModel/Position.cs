@@ -7,34 +7,36 @@ namespace ByBitClientLib.ClientObjectModel
 {
     public class Position
     {
-        //REMEMBER TO READ ONLY THE BELOW VARIABLES
-        public  String Symbol;
-        public String side;
-        public int PositionSize;
-        public Decimal PositionValue;
-        public Decimal EntryPrice;
-        public int Leverage;
-        public Decimal PositionMargin;
-        public Decimal LiquidationPrice;
-        public Decimal BustPrice;
-        public Decimal AccountClosingFee;
-        public Decimal TakeProfit;
-        public Decimal StopLoss;
-        public Decimal TrailingStop;
-        public String PositionStatus;
-        public Decimal OrderMargin;
-        public Decimal WalletBalance;
-        public Decimal RealisedPnl;
-        public String response;
+        public  String Symbol { get; private set; }
+        public String side { get; private set; }
+        public int PositionSize { get; private set; }
+        public Decimal PositionValue { get; private set; }
+        public Decimal EntryPrice { get; private set; }
+        public int Leverage { get; private set; }
+        public Decimal PositionMargin { get; private set; }
+        public Decimal LiquidationPrice { get; private set; }
+        public Decimal BustPrice { get; private set; }
+        public Decimal AccountClosingFee { get; private set; }
+        public Decimal TakeProfit { get; private set; }
+        public Decimal StopLoss { get; private set; }
+        public Decimal TrailingStop { get; private set; }
+        public String PositionStatus { get; private set; }
+        public Decimal OrderMargin { get; private set; }
+        public Decimal WalletBalance { get; private set; }
+        public Decimal RealisedPnl { get; private set; }
+        public String response { get; private set; }
 
-        public Position(String response)
+        //Connection Manager
+        ConnectionManager conn;
+
+        internal Position(JObject responseJson, ConnectionManager conn)
         {
-            JObject json = JObject.Parse(response);
-            this.response = response;
-            PopulateFields((JObject)json["result"]);
+            this.conn = conn;
+            this.response = responseJson.ToString();
+            PopulateFields((JObject)responseJson);
         }
 
-        public void PopulateFields(JObject json)
+        private void PopulateFields(JObject json)
         {
             Symbol = (String)json["symbol"];
             side = (String)json["side"];
@@ -59,6 +61,19 @@ namespace ByBitClientLib.ClientObjectModel
             OrderMargin = (Decimal)json["order_margin"];
             WalletBalance = (Decimal)json["wallet_balance"];
             RealisedPnl = (Decimal)json["realised_pnl"];
+        }
+
+        public Position Refresh()
+        {
+            String response = conn.GetPositionResponse(this.Symbol);
+            JObject responseJson = JObject.Parse(response);
+            PopulateFields((JObject)responseJson["result"]);
+            return this;
+        }
+        public void SetLeverage(Int32 newLeverage) 
+        {
+            conn.SetLeverage(Symbol,newLeverage);
+            Leverage = newLeverage;
         }
     }
 }

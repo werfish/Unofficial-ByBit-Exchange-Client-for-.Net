@@ -12,20 +12,42 @@ namespace ByBitClientLib.ClientObjectModel
     public partial class ConnectionManager
     {
         private ByBitClient client;
+        public bool AutoRoundingMode;
         public int RetryAmount;
         public int RetryEveryMilisec;
         public int RetryAmountLiquidation;
         public int RetryIntervalLiquidation;
         public long exchangeSynchronization;
 
+        public ConnectionManager(ByBitClient client) 
+        {
+            ConstructConnectionManager(client,0,0,0,0);
+        }
+
         public ConnectionManager(ByBitClient client, int RetryAmount = 3, int RetryEveryMilisec = 500, int RetryAmountLiquidation = 10, int RetryIntervalLiquidation = 1000)
         {
+            ConstructConnectionManager(client, RetryAmount, RetryEveryMilisec, RetryAmountLiquidation, RetryIntervalLiquidation);
+        }
+
+        private void ConstructConnectionManager(ByBitClient client, int RetryAmount, int RetryEveryMilisec, int RetryAmountLiquidation, int RetryIntervalLiquidation) 
+        {
             this.client = client;
+            exchangeSynchronization = 0;
+            SetAutoRetry(RetryAmount, RetryEveryMilisec);
+            SetLiquidationRetry(RetryAmountLiquidation, RetryIntervalLiquidation);
+
+        }
+
+        public void SetAutoRetry(int RetryAmount = 3, int RetryEveryMilisec = 500) 
+        {
             this.RetryAmount = RetryAmount;
             this.RetryEveryMilisec = RetryEveryMilisec;
+        }
+
+        public void SetLiquidationRetry(int RetryAmountLiquidation = 10, int RetryIntervalLiquidation = 1000)
+        {
             this.RetryAmountLiquidation = RetryAmountLiquidation;
             this.RetryIntervalLiquidation = RetryIntervalLiquidation;
-            exchangeSynchronization = 0;
         }
 
         public void updateSynchronization()
@@ -45,14 +67,14 @@ namespace ByBitClientLib.ClientObjectModel
             //Console.WriteLine("Synchro "+ exchangeSynchronization);
         }
 
-        public float getServerTime()
+        public DateTime getServerTime()
         {
             float serverTime;
             ByBitRequest request = client.CreateRequest("GET_ServerTime");
             String response = ExecuteWithRetry(request);
             JObject jResponse = JObject.Parse(response);
             serverTime = (float)jResponse["time_now"];
-            return serverTime;
+            return (DateTimeOffset.FromUnixTimeSeconds((Int32)serverTime)).UtcDateTime;
         }
 
         private String ExecuteWithRetry(ByBitRequest request, String retryType = "Standard")
@@ -65,13 +87,14 @@ namespace ByBitClientLib.ClientObjectModel
             {
                 retAmount = RetryAmount;
                 retryMili = RetryEveryMilisec;
-            }else if(retryType.Equals("Liquidation"))
+            }
+            else if (retryType.Equals("Liquidation"))
             {
                 retAmount = RetryAmountLiquidation;
                 retryMili = RetryIntervalLiquidation;
             }
 
-            for (int i = 1; i <= retAmount; i++)
+            for (int i = 0; i <= retAmount; i++)
             {
                 try
                 {
@@ -81,32 +104,17 @@ namespace ByBitClientLib.ClientObjectModel
                 } catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
-                    Thread.Sleep(retryMili);
+                    if (i == retAmount)
+                    {
+                        throw e;
+                    }
+                    else 
+                    {
+                        Thread.Sleep(retryMili);
+                    }
                 }
             }
             return response;
-        }
-
-        //Public methods, ORDERS Processing
-
-        public String ChangeLeverage(String CryptoPair, int newLeverage)
-        {
-            ByBitRequest request = client.CreateRequest("POST_ChangeUserLeverage");
-            request.AddRequired(CryptoPair, newLeverage.ToString());
-
-            return ExecuteWithRetry(request);
-        }
-
-        //private methods Orders Procecessig 
-
-        public Position GetPosition(String CryptoPair)
-        {
-            ByBitRequest requestPosition = client.CreateRequest("GET_MyPosition");
-            requestPosition["symbol"] = CryptoPair;
-
-            String Response = ExecuteWithRetry(requestPosition);
-
-            return new Position(Response);
         }
     }
 }

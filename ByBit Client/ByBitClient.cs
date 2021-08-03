@@ -21,6 +21,10 @@ namespace ByBitClientLib
         private string JSONPath = "ApiSchema.json";
         private SchemaInfo Schema;
 
+        //Time Sync Variables
+        public Boolean AutoSync;
+        private float ServerLocalTimeDiff;
+
         private string[] AUTHENTICATION_HEADERS = new string[] { "api_key", "timestamp", "recv_window" };
 
         //OTHER API HEADERS
@@ -57,8 +61,20 @@ namespace ByBitClientLib
 
         //PRivate Functions
         private dynamic ConvertValue(Object value)
+        {           
+            dynamic d = value;
+
+            return d;
+        }
+
+        private dynamic ConvertValueWithBoolCheck(Object value) 
         {
             dynamic d = value;
+
+            if (d.GetType().ToString().Equals(Type.GetType("System.Boolean").ToString()))
+            {
+                d = ((Boolean)d).ToString().ToLower();
+            }
             return d;
         }
 
@@ -70,7 +86,7 @@ namespace ByBitClientLib
             requestString = requestString + "?" + paramsString.ToString();
 
             //TESTING
-            //Console.WriteLine(paramsString.ToString());
+            Console.WriteLine(paramsString.ToString());
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);
@@ -99,7 +115,7 @@ namespace ByBitClientLib
             }
 
             //TESTING
-            //Console.WriteLine(JSON);
+            Console.WriteLine(JSON);
 
             //Send Request
             RestClient restClient = new RestClient(API_URL);
@@ -108,8 +124,8 @@ namespace ByBitClientLib
 
             //Adding Json body as parameter to the post request
             restRequest.AddParameter("application/json", JSON, ParameterType.RequestBody);
-
             IRestResponse restResponse = restClient.Execute(restRequest);
+            Console.WriteLine(restRequest.Resource.ToString());
 
             string result = restResponse.Content;
 
@@ -148,7 +164,7 @@ namespace ByBitClientLib
 
             foreach (Model.Parameter param in newRequest)
             {
-                paramsString.Append(param.ParameterName + "=" + ConvertValue(param.Value) + "&");
+                paramsString.Append(param.ParameterName + "=" + ConvertValueWithBoolCheck(param.Value) + "&");
 
             }
             paramsString.Remove(paramsString.ToString().LastIndexOf("&"), 1); //Cut the last &
@@ -156,6 +172,9 @@ namespace ByBitClientLib
             //Create the hex SIGN
             string hexSign = CryptoGraFX.CreateSignature(API_SECRET, paramsString.ToString());
             string result = "";
+
+            Console.WriteLine(paramsString);
+            Console.WriteLine(endpoint.RequestString);
 
             if (endpoint.RequestMethod.Equals("GET"))
             {
@@ -258,7 +277,7 @@ namespace ByBitClientLib
             return result;
         }
 
-
+        //---OLD LEGACY CODE-------------------------------------------------
         public string MarketOrder(string Side, string Symbol, int quantity)
         {
             string result;

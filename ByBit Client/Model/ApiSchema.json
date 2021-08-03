@@ -253,11 +253,11 @@
         },
         "reduce_only": {
           "type": "boolean",
-          "isRequired": false
+          "isRequired": true
         },
         "close_on_trigger": {
           "type": "boolean",
-          "isRequired": false
+          "isRequired": true
         },
         "order_link_id": {
           "type": "String",
@@ -469,7 +469,7 @@
     },
     "POST_ReplaceConditionalOrder": {
       "method": "POST",
-      "requestString": "/open-api/stop-order/replace",
+      "requestString": "/v2/private/stop-order/replace",
       "Parameters": {
         "stop_order_id": {
           "type": "String",

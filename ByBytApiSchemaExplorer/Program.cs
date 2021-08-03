@@ -26,7 +26,7 @@ namespace ByBytApiSchemaExplorer
             string API_URL = (string)Api_JSON["API_URL"];
 
             isRunning = true;
-            client = new ByBitClient(API_KEY, API_SECRET, API_URL);
+            client = new ByBitClient(API_KEY, API_SECRET, API_URL, 20000);
 
             while (isRunning)
             {
