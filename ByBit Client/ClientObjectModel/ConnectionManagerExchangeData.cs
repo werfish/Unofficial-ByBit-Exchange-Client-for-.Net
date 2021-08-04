@@ -11,7 +11,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public Dictionary<String, SymbolInfo> QuerySymbol() 
         {
-            ByBitRequest request = client.CreateRequest("GET_QuerySymbol");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QuerySymbol");
 
             Dictionary<String, SymbolInfo> symbols = new Dictionary<String, SymbolInfo>();
             String response = ExecuteWithRetry(request);
@@ -28,7 +28,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String GetLatestInfo(String CryptoPair) //, DateTime startTime, DateTime endTime, ExecType executionType, Int32 page, Int32 limit) 
         {
-            ByBitRequest request = client.CreateRequest("GET_LatestInformationForSymbol");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_LatestInformationForSymbol");
             request["symbol"] = CryptoPair;
 
             return ExecuteWithRetry(request); ;
@@ -107,7 +107,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public List<Candle> QueryKLine(String CryptoPair, Interval interval, DateTime? from, Int32 limit = 200) //, DateTime startTime, DateTime endTime, ExecType executionType, Int32 page, Int32 limit) 
         {
-            ByBitRequest request = client.CreateRequest("GET_QueryKline");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QueryKline");
             String response;
 
             request.AddRequired(CryptoPair,this.parseInterval(interval), ((DateTimeOffset)from).ToUnixTimeSeconds());

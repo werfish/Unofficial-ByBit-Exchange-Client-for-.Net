@@ -70,7 +70,7 @@ namespace ByBitClientLib.ClientObjectModel
         public DateTime getServerTime()
         {
             float serverTime;
-            ByBitRequest request = client.CreateRequest("GET_ServerTime");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_ServerTime");
             String response = ExecuteWithRetry(request);
             JObject jResponse = JObject.Parse(response);
             serverTime = (float)jResponse["time_now"];

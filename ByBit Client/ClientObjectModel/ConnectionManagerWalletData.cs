@@ -9,7 +9,7 @@ namespace ByBitClientLib.ClientObjectModel
     {
         public Decimal GetPairEquity(String coin) 
         {
-            ByBitRequest request= client.CreateRequest("GET_GetWalletBalance");
+            ByBitRequest request= client.InversePerpetual.CreateRequest("GET_GetWalletBalance");
             request["coin"] = coin;
 
             String response = ExecuteWithRetry(request);
@@ -20,7 +20,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public Decimal GetPairEquity(Currency coin)
         {
-            ByBitRequest request = client.CreateRequest("GET_GetWalletBalance");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_GetWalletBalance");
             request["coin"] = coin.ToString();
 
             String response = ExecuteWithRetry(request);
@@ -33,7 +33,7 @@ namespace ByBitClientLib.ClientObjectModel
         {
             Dictionary<String, Decimal> pairsBalance = new Dictionary<String, Decimal>();
 
-            ByBitRequest request = client.CreateRequest("GET_GetWalletBalance");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_GetWalletBalance");
 
             String response = ExecuteWithRetry(request);
             JObject responseJson = JObject.Parse(response);

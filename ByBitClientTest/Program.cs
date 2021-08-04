@@ -83,7 +83,7 @@ namespace ByBitClientTest
                 else if (Choice.Equals("2"))
                 {
                     Console.Clear();
-                    ByBitRequest request = client.CreateRequest("POST_CancelAllActiveOrders");
+                    ByBitRequest request = client.InversePerpetual.CreateRequest("POST_CancelAllActiveOrders");
                     request.AddRequired("ETHUSD");
                     string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");
@@ -95,7 +95,7 @@ namespace ByBitClientTest
                 else if (Choice.Equals("3"))
                 {
                     Console.Clear();
-                    string order = client.MakeRequest("GET_MyPosition","ETHUSD");
+                    string order = client.InversePerpetual.MakeRequest("GET_MyPosition","ETHUSD");
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
                     Console.WriteLine("Checked Balance!!");
@@ -105,7 +105,7 @@ namespace ByBitClientTest
                 else if (Choice.Equals("4"))
                 {
                     Console.Clear();
-                    string order = client.MakeRequest("GET_UserLeverage");
+                    string order = client.InversePerpetual.MakeRequest("GET_UserLeverage");
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
                     Console.WriteLine("Checked Leverage!!");
@@ -115,7 +115,7 @@ namespace ByBitClientTest
                 else if (Choice.Equals("5"))
                 {
                     Console.Clear();
-                    string order = client.MakeRequest("POST_ChangeUserLeverage","ETHUSD", "10");
+                    string order = client.InversePerpetual.MakeRequest("POST_ChangeUserLeverage","ETHUSD", "10");
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
                     Console.WriteLine("Changed Leverage!!");
@@ -125,7 +125,7 @@ namespace ByBitClientTest
                 else if (Choice.Equals("6"))
                 {
                     Console.Clear();
-                    string order = client.MakeRequest("GET_LatestInformationForSymbol","BTCUSD");
+                    string order = client.InversePerpetual.MakeRequest("GET_LatestInformationForSymbol","BTCUSD");
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);
                     Console.WriteLine("Current Price Fetched!!");
@@ -137,7 +137,7 @@ namespace ByBitClientTest
                     Console.Clear();
                     int Timeframe = ((Int32)(DateTime.UtcNow.AddMinutes(-20).Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
                     //string order = client.MakeRequest("GET_QueryKline","BTCUSD","5",Timeframe,1);
-                    ByBitRequest request = client.CreateRequest("GET_QueryKline");
+                    ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QueryKline");
                     request.AddRequired("BTCUSD","5",Timeframe);
                     request["limit"] = 1;
                     string order = request.Execute();
@@ -151,7 +151,7 @@ namespace ByBitClientTest
                 {
                     Console.Clear();
                     //string order = client.MakeRequest("GET_QueryKline","BTCUSD","5",Timeframe,1);
-                    ByBitRequest request = client.CreateRequest("GET_ServerTime");
+                    ByBitRequest request = client.InversePerpetual.CreateRequest("GET_ServerTime");
                     string order = request.Execute();
                     Console.WriteLine("-------------------RESPONSE---------------------");
                     Console.WriteLine(order);

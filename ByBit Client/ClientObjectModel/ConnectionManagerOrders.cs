@@ -16,7 +16,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public Order MarketOrder(String CryptoPair, int Contracts, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel, bool closeOntrigger = false)
         {
-            ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_PlaceActiveOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), timeInForce.ToString(), reduceOnly, closeOntrigger);
 
             return new Order(ExecuteWithRetry(request),this);
@@ -44,7 +44,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public Order LimitOrder(String CryptoPair,int Contracts, double entryPrice, bool reduceOnly = false, TimeInForce timeInForce = TimeInForce.GoodTillCancel, bool closeOntrigger = false)
         {
-            ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_PlaceActiveOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), timeInForce.ToString(), reduceOnly, closeOntrigger);
             request["price"] = entryPrice.ToString(CultureInfo.InvariantCulture);
 
@@ -53,7 +53,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String CancelActiveOrder(String cryptoPair, String orderId)
         {
-            ByBitRequest request = client.CreateRequest("POST_CancelActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_CancelActiveOrder");
             request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
@@ -61,7 +61,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String CancelAllActiveOrders(String cryptoPair)
         {
-            ByBitRequest request = client.CreateRequest("POST_CancelAllActiveOrders");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_CancelAllActiveOrders");
             request.AddRequired(cryptoPair);
 
             return ExecuteWithRetry(request);
@@ -69,7 +69,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String UpdateLimitOrder(String cryptoPair, String orderId, Double newEntryPrice = 0, Int32 newQuantity = 0, Double takeProfit = 0, Double stopLoss = 0, TriggerPriceType tpTrigger = TriggerPriceType.LastPrice, TriggerPriceType slTrigger = TriggerPriceType.LastPrice)
         {
-            ByBitRequest request = client.CreateRequest("POST_ReplaceActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_ReplaceActiveOrder");
             request.AddRequired(orderId, cryptoPair);
 
             request["tp_trigger_by"] = tpTrigger.ToString();
@@ -107,7 +107,7 @@ namespace ByBitClientLib.ClientObjectModel
         //GET_QueryActiveOrder
         public String QueryActiveOrder(String cryptoPair, String orderId)
         {
-            ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QueryActiveOrder");
             request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
@@ -115,7 +115,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public List<Order> QueryActiveOrders(String cryptoPair)
         {
-            ByBitRequest request = client.CreateRequest("GET_QueryActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QueryActiveOrder");
             request.AddRequired(cryptoPair);
 
             String response = ExecuteWithRetry(request);
@@ -166,7 +166,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String GetActiveOrder(String cryptoPair, OrderStatus[] status, String cursor = "", Int32 limit = 50, Direction direction = Direction.next)
         {
-            ByBitRequest request = client.CreateRequest("GET_GetActiveOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_GetActiveOrder");
             request["symbol"] = cryptoPair;
             request["direction"] = direction.ToString();
             request["limit"] = limit;    //Default is 20
@@ -201,7 +201,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public Order ConditionalMarketOrder(String CryptoPair, int Contracts, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
-            ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_PlaceConditionalOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Market", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(CultureInfo.InvariantCulture), triggerPrice.ToString(CultureInfo.InvariantCulture), timeInForce.ToString());
 
             if (triggerBy != TriggerPriceType.LastPrice)
@@ -214,7 +214,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public Order ConditionalLimitOrder(String CryptoPair,int Contracts, Double entryPrice, Double triggerPrice, Double beforeTriggerPrice, TriggerPriceType triggerBy = TriggerPriceType.LastPrice, TimeInForce timeInForce = TimeInForce.GoodTillCancel)
         {
-            ByBitRequest request = client.CreateRequest("POST_PlaceConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_PlaceConditionalOrder");
             request.AddRequired(GetSide(Contracts), CryptoPair, "Limit", (int)Math.Abs(Contracts), beforeTriggerPrice.ToString(CultureInfo.InvariantCulture), triggerPrice.ToString(CultureInfo.InvariantCulture), timeInForce.ToString());
             request["price"] = entryPrice.ToString(CultureInfo.InvariantCulture);
 
@@ -228,7 +228,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String CancelConditionalOrder(String cryptoPair, String orderId)
         {
-            ByBitRequest request = client.CreateRequest("POST_CancelConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_CancelConditionalOrder");
             request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
@@ -236,7 +236,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String CancelAllConditionalOrders(String cryptoPair)
         {
-            ByBitRequest request = client.CreateRequest("POST_CancelAllConditionalOrders");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_CancelAllConditionalOrders");
             request.AddRequired(cryptoPair);
 
             return ExecuteWithRetry(request);
@@ -244,7 +244,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String UpdateConditionalOrder(String cryptoPair, String orderId,Int32 newOrderQuantity, Double newTriggerPrice, Double newOrderPrice)
         {
-            ByBitRequest request = client.CreateRequest("POST_ReplaceConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_ReplaceConditionalOrder");
             request.AddRequired(orderId, cryptoPair);
 
             if (newOrderQuantity != 0)
@@ -304,7 +304,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String GetConditionalOrder(String cryptoPair, StopOrderStatus[] status, String cursor = "", Int32 limit = 50, Direction direction = Direction.next)
         {
-            ByBitRequest request = client.CreateRequest("GET_GetConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_GetConditionalOrder");
             request["symbol"] = cryptoPair;
             request["direction"] = direction.ToString();
             request["limit"] = limit;    //Default is 20
@@ -340,7 +340,7 @@ namespace ByBitClientLib.ClientObjectModel
         //GET_QueryConditionalOrder
         public String QueryConditionalOrder(String cryptoPair, String orderId)
         {
-            ByBitRequest request = client.CreateRequest("GET_QueryConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QueryConditionalOrder");
             request.AddRequired(cryptoPair, orderId);
 
             return ExecuteWithRetry(request);
@@ -348,7 +348,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public List<Order> QueryConditionalOrders(String cryptoPair)
         {
-            ByBitRequest request = client.CreateRequest("GET_QueryConditionalOrder");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_QueryConditionalOrder");
             request.AddRequired(cryptoPair);
 
             String response = ExecuteWithRetry(request);
@@ -369,7 +369,7 @@ namespace ByBitClientLib.ClientObjectModel
             String Side;
             do
             {
-                ByBitRequest requestSize = client.CreateRequest("GET_MyPosition");
+                ByBitRequest requestSize = client.InversePerpetual.CreateRequest("GET_MyPosition");
                 requestSize["symbol"] = CryptoPair;
 
                 String Response = ExecuteWithRetry(requestSize, "Liquidation");
@@ -388,7 +388,7 @@ namespace ByBitClientLib.ClientObjectModel
 
                 if (PositionSize != 0)
                 {
-                    ByBitRequest request = client.CreateRequest("POST_PlaceActiveOrder");
+                    ByBitRequest request = client.InversePerpetual.CreateRequest("POST_PlaceActiveOrder");
                     request.AddRequired(Side, CryptoPair, "Market", PositionSize, TimeInForce.GoodTillCancel.ToString(), true, false);
                     ExecuteWithRetry(request, "Liquidation");
                 }

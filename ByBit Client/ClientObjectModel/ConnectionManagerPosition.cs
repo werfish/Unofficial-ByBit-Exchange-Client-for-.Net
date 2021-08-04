@@ -17,7 +17,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         internal String GetPositionResponse(String CryptoPair)
         {
-            ByBitRequest requestPosition = client.CreateRequest("GET_MyPosition");
+            ByBitRequest requestPosition = client.InversePerpetual.CreateRequest("GET_MyPosition");
             requestPosition["symbol"] = CryptoPair;
 
             return ExecuteWithRetry(requestPosition);
@@ -27,7 +27,7 @@ namespace ByBitClientLib.ClientObjectModel
         {
             Dictionary<String, Position> positions = new Dictionary<String, Position>();
 
-            ByBitRequest requestPosition = client.CreateRequest("GET_MyPosition");
+            ByBitRequest requestPosition = client.InversePerpetual.CreateRequest("GET_MyPosition");
 
             String response = ExecuteWithRetry(requestPosition);
             JObject responseJson = JObject.Parse(response);
@@ -44,7 +44,7 @@ namespace ByBitClientLib.ClientObjectModel
         //Exchange Managed Conditional Order Stop Loss
         public String SetStopLoss(String CryptoPair, Double stopPrice)
         {
-            ByBitRequest request = client.CreateRequest("POST_SetTradingStop");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_SetTradingStop");
             request.AddRequired(CryptoPair);
             request["stop_loss"] = stopPrice.ToString(CultureInfo.InvariantCulture);
 
@@ -53,7 +53,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String SetTrailingStopLoss(String CryptoPair, Double usdAmount)
         {
-            ByBitRequest request = client.CreateRequest("POST_SetTradingStop");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_SetTradingStop");
             request.AddRequired(CryptoPair);
             request["trailing_stop"] = usdAmount.ToString(CultureInfo.InvariantCulture);
 
@@ -62,7 +62,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String SetLeverage(String CryptoPair, Int32 newLeverage) 
         {
-            ByBitRequest request = client.CreateRequest("POST_SetLeverage");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("POST_SetLeverage");
             request.AddRequired(CryptoPair, newLeverage);
 
             return ExecuteWithRetry(request);
@@ -123,7 +123,7 @@ namespace ByBitClientLib.ClientObjectModel
 
         public String GetProfitLossQuery(String CryptoPair, DateTime? startTime = null, DateTime? endTime = null, ExecType executionType = ExecType.NONE, Int32 page = 1, Int32 limit = 50) //, DateTime startTime, DateTime endTime, ExecType executionType, Int32 page, Int32 limit) 
         {
-            ByBitRequest request = client.CreateRequest("GET_ClosedProfitAndLoss");
+            ByBitRequest request = client.InversePerpetual.CreateRequest("GET_ClosedProfitAndLoss");
             request.AddRequired(CryptoPair);
 
             if (startTime.HasValue) 

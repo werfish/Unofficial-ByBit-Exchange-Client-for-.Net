@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Model\ApiSchema.json" />
+    <None Remove="Model\UsdtFuturesSchema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Model\UsdtFuturesSchema.json" />
+    <EmbeddedResource Include="Model\InverseFuturesSchema.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,12 +14,16 @@ namespace ByBitClientLib
 {
     public class ByBitClient
     {
-        private string API_KEY;
-        private string API_SECRET;
-        public string API_URL;
-        private string RECV_WINDOW = String.Empty;
-        private string JSONPath = "ApiSchema.json";
-        private SchemaInfo Schema;
+        private String API_KEY;
+        private String API_SECRET;
+        public String API_URL;
+        private String RECV_WINDOW = String.Empty;
+        private const String InverseSchemaPath = "InverseFuturesSchema.json";
+        private const String UsdtSchemaPath = "UsdtFuturesSchema.json";
+
+        //Public variables
+        public FuturesContractType InversePerpetual;
+        public FuturesContractType Linear;
 
         //Time Sync Variables
         public Boolean AutoSync;
@@ -54,7 +58,8 @@ namespace ByBitClientLib
             this.API_SECRET = Api_Secret;
             this.API_URL = api_url;
 
-            Schema = new SchemaInfo(JSONPath);
+            InversePerpetual = new FuturesContractType(this,InverseSchemaPath);
+            Linear = new FuturesContractType(this, UsdtSchemaPath);
         }
 
         private ByBitClient() { }
@@ -203,79 +208,6 @@ namespace ByBitClientLib
         }
 
         //PUBLIC INTERFACE
-
-        //Schema Functions
-        public String getSchemaJSON()
-        {
-            return Schema.JsonSchema;
-        }
-
-        public String[] getEndpointNames()
-        {
-            return Schema.EndPointNames;
-        }
-
-        public string getEndpointSchema(string EndpointName)
-        {
-            return Schema.EndPointSchemas[EndpointName];
-        }
-
-        public string getEndpointSchema(int EndPointIndex)
-        {
-            return Schema.EndPointSchemas.ElementAt(EndPointIndex).Value;
-        }
-
-        //Request Functions
-        public EndPoint GetEndPoint(string EndPointTitle)
-        {
-            foreach (EndPoint endpoint in Schema.EndPoints)
-            {
-                if (endpoint.EndPointTitle.Equals(EndPointTitle))
-                {
-                    return endpoint;
-                }
-            }
-
-            throw new ArgumentException(EndPointTitle, "End point Title was not found in the Endpoints schema.");
-        }
-
-        public ByBitRequest CreateRequest(EndPoint endpoint)
-        {
-            return new ByBitRequest(endpoint, this);
-        }
-
-        public ByBitRequest CreateRequest(string endpointTitle)
-        {
-            return CreateRequest(GetEndPoint(endpointTitle));
-        }
-
-        public string MakeRequest(EndPoint endpoint,params object[] parameters)
-        {
-            ByBitRequest newRequest = CreateRequest(endpoint);
-            int Counter = 0;
-
-            //Check for Wrong amount of Parameters
-            if (parameters.Length != newRequest.Count())
-            {
-                throw new ArgumentException("Amount of Function Parameters does not meet the amount of Request Parameters. ");
-            }
-
-            foreach (Model.Parameter param in newRequest)
-            {
-                param.Value = parameters[Counter];
-                Counter++;
-            }
-            
-            //Send the request to exchange
-            return ExecuteRequest(newRequest, endpoint);
-        }
-
-        public string MakeRequest(String EndPointTitle,params object[] parameters)
-        {
-            string result;
-            result = MakeRequest(GetEndPoint(EndPointTitle), parameters);
-            return result;
-        }
 
         //---OLD LEGACY CODE-------------------------------------------------
         public string MarketOrder(string Side, string Symbol, int quantity)
